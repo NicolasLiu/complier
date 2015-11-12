@@ -9,15 +9,22 @@
 
 using namespace std;
 
-enum reservedWord
+#define reservedNum 20
+enum symbolType//Symbol类型
 {
-	_integer = 1, _char, _const, _var, _procedure, _function, _for, _if, _then,
-	_else, _while, _do, _downto, _to, _begin, _end, _read, _write, _max_r, _identifier,
-	_number, _max_num
+	_identifier = reservedNum + 1, _constant, _plus, _sub, _multi, _div, _lparenthese, _rparenthese,
+	_lbracket, _rbracket, _semicolon, _comma, _fullpoint, _equal, _colon, _assign, _less, _lessequal,
+	_lessmore, _more, _moreequal, _string, _max_num
 };
-typedef struct _symbol
+
+typedef struct _reserved//保留字结构体
 {
-	reservedWord type;
+	int value;
+	char name[20];
+} ReservedWord;
+typedef struct _symbol//符号结构体
+{
+	int type;
 	char identifier[100];
 	int value;
 } Symbol;
@@ -31,12 +38,15 @@ extern char chs[100];//当前正在分析的单词
 extern char ch;//下一个字符
 extern ifstream fin;//源文件指针
 extern map<string, int> reserved;//保留字表
+extern ReservedWord reservedTable[_max_num];//初始化保留字表
 extern Symbol symbol;//当前单词
+extern int returnChar;//是否需要退回一个char
 typedef pair <string, int> reservedPair;
 
-
+int error(int);
 int getSym();
 char getChar();
 void reserved_init();
 void input_init();
+void printSym();
 

@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="error.cpp" />
     <ClCompile Include="getsym.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
