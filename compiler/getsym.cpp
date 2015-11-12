@@ -241,9 +241,11 @@ char getChar()
 {
 	if (sBufLen == 0 || sBufLen == sBufPos)
 	{
-		fin.getline(sBuffer, 1000);
-		sBufLen = (int)fin.gcount();
-		sBuffer[sBufLen - 1] = ' ';
+		string s;
+		getline(fin, s);
+		s.append(" ");
+		sBufLen = s.length();
+		strcpy(sBuffer, s.c_str());
 		sBufPos = 0;
 	}
 	ch = sBuffer[sBufPos++];
