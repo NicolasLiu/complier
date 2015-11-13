@@ -32,6 +32,8 @@ int main()
 	{
 		getSym();
 		printSym();
+		if (symbol.type == _fullpoint)
+			break;
 	}
 	
 	return 0;

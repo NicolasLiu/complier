@@ -243,10 +243,11 @@ char getChar()
 	{
 		string s;
 		getline(fin, s);
-		s.append(" ");
+		//s.append(" ");
 		sBufLen = s.length();
 		strcpy(sBuffer, s.c_str());
 		sBufPos = 0;
+		return ch = ' ';
 	}
 	ch = sBuffer[sBufPos++];
 	return ch;
