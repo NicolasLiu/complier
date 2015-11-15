@@ -146,9 +146,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="compound.cpp" />
+    <ClCompile Include="const.cpp" />
     <ClCompile Include="error.cpp" />
+    <ClCompile Include="function.cpp" />
     <ClCompile Include="getsym.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="procedure.cpp" />
+    <ClCompile Include="program.cpp" />
+    <ClCompile Include="var.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global.h" />

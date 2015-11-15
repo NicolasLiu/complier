@@ -24,6 +24,24 @@
     <ClCompile Include="error.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="program.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="const.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="var.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="procedure.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="function.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="compound.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global.h">

@@ -12,7 +12,9 @@ using namespace std;
 #define reservedNum 20
 enum symbolType//Symbol类型
 {
-	_identifier = reservedNum + 1, _constant, _plus, _sub, _multi, _div, _lparenthese, _rparenthese,
+	_const = 1, _var, _array, _of, _integer, _char, _procedure, _function, _for, _if, _else, _then, _do, _while,
+	_downto, _to, _begin, _end, _read, _write,//保留字到此为止
+	_identifier, _constant, _plus, _sub, _multi, _div, _lparenthese, _rparenthese,
 	_lbracket, _rbracket, _semicolon, _comma, _fullpoint, _equal, _colon, _assign, _less, _lessequal,
 	_lessmore, _more, _moreequal, _string, _max_num
 };
@@ -43,10 +45,26 @@ extern Symbol symbol;//当前单词
 extern int returnChar;//是否需要退回一个char
 typedef pair <string, int> reservedPair;
 
+//error.cpp
 int error(int);
+//getSym.cpp
 int getSym();
 char getChar();
+void printSym();
+//main.cpp
 void reserved_init();
 void input_init();
-void printSym();
+//program.cpp
+void program();
+void childprogram();
+//const.cpp
+void constblock();
+//var.cpp
+void varblock();
+//procedure.cpp
+void procedureblock();
+//function.cpp
+void functionblock();
+//compound.cpp
+void compound();
 
