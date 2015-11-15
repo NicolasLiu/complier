@@ -243,6 +243,7 @@ char getChar()
 	{
 		string s;
 		getline(fin, s);
+		sLine++;
 		//s.append(" ");
 		sBufLen = s.length();
 		strcpy(sBuffer, s.c_str());
