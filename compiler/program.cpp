@@ -3,7 +3,7 @@ void program()
 {
 	childprogram();
 	getSym();
-	if (!symbol.type == _comma)
+	if (!(symbol.type == _comma))
 		error(3);
 	return;
 }

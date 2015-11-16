@@ -129,7 +129,6 @@ int getSym()
 				symbol.identifier[i++] = ch;
 			} while (ch != '"');
 			symbol.identifier[i - 1] = 0;
-			returnChar = 1;
 		}
 		
 	}
