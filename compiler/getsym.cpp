@@ -146,8 +146,7 @@ int getSym()
 		getChar();
 		if (ch == '\'')
 		{
-			symbol.type = _constant;
-			symbol.value = 0;
+			symbol.type = _character;
 			symbol.identifier[0] = 0;
 		}
 		else
@@ -266,6 +265,10 @@ void printSym()
 	else if (symbol.type == _constant)
 	{
 		cout << "ÎÞ·ûºÅÕûÊý " << symbol.value << endl;
+	}
+	else if (symbol.type == _character)
+	{
+		cout << "×Ö·û " << symbol.value << endl;
 	}
 	else if (symbol.type == _string)
 	{

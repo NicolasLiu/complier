@@ -16,7 +16,7 @@ enum symbolType//Symbol类型
 	_downto, _to, _begin, _end, _read, _write,//保留字到此为止
 	_identifier, _constant, _plus, _sub, _multi, _div, _lparenthese, _rparenthese,
 	_lbracket, _rbracket, _semicolon, _comma, _fullpoint, _equal, _colon, _assign, _less, _lessequal,
-	_lessmore, _more, _moreequal, _string, _max_num
+	_lessmore, _more, _moreequal, _string, _character, _max_num
 };
 
 typedef struct _reserved//保留字结构体
