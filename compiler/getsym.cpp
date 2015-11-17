@@ -9,7 +9,7 @@ int getSym()
 	{
 		returnChar = 0;
 	}
-	while (isspace(ch))
+	while (isspace(ch) || ch == 0)
 	{
 		getChar();
 	}
@@ -126,6 +126,10 @@ int getSym()
 			do 
 			{
 				getChar();
+				if (ch < 32 || ch>126)
+				{
+					error(3);//字符串中包括非法内容
+				}
 				symbol.identifier[i++] = ch;
 			} while (ch != '"');
 			symbol.identifier[i - 1] = 0;
@@ -246,7 +250,7 @@ char getChar()
 		sBufLen = s.length();
 		strcpy(sBuffer, s.c_str());
 		sBufPos = 0;
-		return ch = ' ';
+		return ch = 0;
 	}
 	ch = sBuffer[sBufPos++];
 	return ch;
