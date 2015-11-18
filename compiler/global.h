@@ -18,6 +18,10 @@ enum symbolType//Symbol类型
 	_lbracket, _rbracket, _semicolon, _comma, _fullpoint, _equal, _colon, _assign, _less, _lessequal,
 	_lessmore, _more, _moreequal, _string, _character, _max_num
 };
+enum quaternion_op//四元式操作符类型
+{
+	q_add = 1, q_sub, q_mul, q_div, q_je, q_jne, q_jz, q_jg, q_jge, q_jl, q_jle, q_call, q_mov
+};
 
 typedef struct _reserved//保留字结构体
 {
