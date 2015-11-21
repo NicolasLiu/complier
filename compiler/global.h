@@ -4,7 +4,8 @@
 #include <fstream>
 #include <string>
 #include <cwctype>
-#include <map>
+#include <unordered_map>
+#include <list>
 #include <stdlib.h>
 
 using namespace std;
@@ -28,13 +29,25 @@ typedef struct _reserved//保留字结构体
 	int value;
 	char name[20];
 } ReservedWord;
+typedef pair <string, int> reservedPair;
 typedef struct _symbol//符号结构体
 {
 	int type;
 	char identifier[100];
 	int value;
 } Symbol;
-
+typedef struct _symbolitem//符号表中的一项
+{
+	string name;//标识符
+	int constvar;//_const,_var
+	int type;//_integer, _char,_procedure, _function
+	int value;//值
+	int dimension;//维数
+	int upperbound;//上界
+	int paramnum;//函数或过程参数数量
+	int params[10];//函数或过程参数类型
+}symItem;
+typedef pair <string, symItem> symTableItem;
 
 extern char sBuffer[1000];//源代码行缓冲区
 extern int sLine;//源代码当前行数
@@ -43,12 +56,12 @@ extern int sBufPos;//行缓冲区指针
 extern char chs[100];//当前正在分析的单词
 extern char ch;//下一个字符
 extern ifstream fin;//源文件指针
-extern map<string, int> reserved;//保留字表
+extern unordered_map<string, int> reserved;//保留字表
 extern ReservedWord reservedTable[_max_num];//初始化保留字表
 extern Symbol symbol;//当前单词
 extern int returnChar;//是否需要退回一个char
-typedef pair <string, int> reservedPair;
 
+extern list<unordered_map<string, symItem>> symbolTable;//符号表
 //error.cpp
 int error(int);
 //getSym.cpp
@@ -63,12 +76,20 @@ void program();
 void childprogram();
 //const.cpp
 void constblock();
+void constdefine();
 //var.cpp
 void varblock();
+void vardefine();
 //procedure.cpp
 void procedureblock();
 //function.cpp
 void functionblock();
 //compound.cpp
 void compound();
+//symboltable.cpp
+void addSymTableLevel();
+void insertSymTable(symTableItem sym);
+int findSymTable(string name);
+int findSymTableLocal(string name);
+
 

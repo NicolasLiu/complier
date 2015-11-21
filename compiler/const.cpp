@@ -1,7 +1,20 @@
 #include "global.h"
 void constblock()
 {
-
+	do 
+	{
+		constdefine();
+		getSym();
+	} while (symbol.type == _comma);
+	if (symbol.type == _semicolon)
+	{
+		return;
+	}
+	else
+	{
+		error(1);//应以分号结尾
+	}
+	
 }
 void constdefine()
 {
@@ -30,6 +43,14 @@ void constdefine()
 			if (symbol.type == _constant)//无符号整数
 			{
 				value = k*symbol.value;
+				symTableItem sym = { name,{name,_const,_integer,value} };
+				insertSymTable(sym);
+			}
+			else if (symbol.type == _character)//字符
+			{
+				value = k*symbol.value;
+				symTableItem sym = { name,{ name,_const,_char,value } };
+				insertSymTable(sym);
 			}
 			else
 			{

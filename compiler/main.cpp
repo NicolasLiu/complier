@@ -9,7 +9,7 @@ char chs[100];//当前正在分析的单词
 char ch;//下一个字符
 Symbol symbol;//当前读取到的单词
 ifstream fin;//源文件指针
-map<string, int> reserved;//保留字表
+unordered_map<string, int> reserved;//保留字表
 ReservedWord reservedTable[_max_num] = { {1,"const"}, {2,"var"},{3,"array"},{4,"of"},
 								{5,"integer"},{6,"char"},{7,"procedure"},{8,"function"},
 								{9,"for"}, {10,"if"}, {11,"else"}, {12,"then"},
@@ -28,14 +28,12 @@ int main()
 	
 	input_init();
 	reserved_init();
-	while (1)
-	{
-		getSym();
-		printSym();
-		if (symbol.type == _fullpoint)
-			break;
-	}
-	
+
+	addSymTableLevel();
+	symTableItem sym = { "a1",{"a1",_const,_integer,1,0,0,0} };
+	insertSymTable(sym);
+	int rtn = findSymTable("a2");
+	cout << rtn << endl;
 	return 0;
 }
 void input_init()

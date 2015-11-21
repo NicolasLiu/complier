@@ -154,6 +154,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="procedure.cpp" />
     <ClCompile Include="program.cpp" />
+    <ClCompile Include="symboltable.cpp" />
     <ClCompile Include="var.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -9,6 +9,7 @@ void program()
 }
 void childprogram()
 {
+	addSymTableLevel();
 	getSym();
 	if (symbol.type == _const)//const
 	{

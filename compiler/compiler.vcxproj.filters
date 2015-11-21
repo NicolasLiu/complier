@@ -42,6 +42,9 @@
     <ClCompile Include="compound.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="symboltable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global.h">
