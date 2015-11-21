@@ -7,14 +7,6 @@ void varblock()
 		vardefine();
 		getSym();
 	} while (symbol.type == _identifier);
-	if (symbol.type == _semicolon)
-	{
-		return;
-	}
-	else
-	{
-		error(1);//应以分号结尾
-	}
 }
 void vardefine()
 {
@@ -86,6 +78,12 @@ void vardefine()
 							symTableItem sym = { names[i - 1],{ names[i - 1],_var,type ,0,1,upperbound} };
 							insertSymTable(sym);
 						}
+						getSym();
+						if (symbol.type != _semicolon)
+						{
+							error(1);//应以分号结尾
+						}
+						return;
 					}
 					else
 					{
@@ -94,7 +92,12 @@ void vardefine()
 							symTableItem sym = { names[i - 1],{ names[i - 1],_var,symbol.type } };
 							insertSymTable(sym);
 						}
-						
+						getSym();
+						if (symbol.type != _semicolon)
+						{
+							error(1);//应以分号结尾
+						}
+						return;
 					}
 					
 				}

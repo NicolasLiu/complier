@@ -22,6 +22,7 @@ ReservedWord reservedTable[_max_num] = { {1,"const"}, {2,"var"},{3,"array"},{4,"
 								{37,"<"}, {38,"<="}, {39,"<>"}, {40,">"},
 								{41,">="}, {42,"string"},{43,"character"} };//初始化保留字表
 int returnChar;//是否需要退回一个char
+int errorNum;//错误数量
 
 int main()
 {
@@ -29,11 +30,7 @@ int main()
 	input_init();
 	reserved_init();
 
-	addSymTableLevel();
-	symTableItem sym = { "a1",{"a1",_const,_integer,1,0,0,0} };
-	insertSymTable(sym);
-	int rtn = findSymTable("a2");
-	cout << rtn << endl;
+	program();
 	return 0;
 }
 void input_init()

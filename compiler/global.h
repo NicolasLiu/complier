@@ -44,8 +44,9 @@ typedef struct _symbolitem//符号表中的一项
 	int value;//值
 	int dimension;//维数
 	int upperbound;//上界
+	int isRef;//是否是引用
 	int paramnum;//函数或过程参数数量
-	int params[10];//函数或过程参数类型
+	char params[10][100];//函数或过程参数名称
 }symItem;
 typedef pair <string, symItem> symTableItem;
 
@@ -60,6 +61,7 @@ extern unordered_map<string, int> reserved;//保留字表
 extern ReservedWord reservedTable[_max_num];//初始化保留字表
 extern Symbol symbol;//当前单词
 extern int returnChar;//是否需要退回一个char
+extern int errorNum;//错误数量
 
 extern list<unordered_map<string, symItem>> symbolTable;//符号表
 //error.cpp
@@ -82,8 +84,11 @@ void varblock();
 void vardefine();
 //procedure.cpp
 void procedureblock();
+void procedurehead();
+void formalparam(char[][100], int*);
 //function.cpp
 void functionblock();
+void functionhead();
 //compound.cpp
 void compound();
 //symboltable.cpp
