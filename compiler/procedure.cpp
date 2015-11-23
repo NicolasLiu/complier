@@ -1,14 +1,13 @@
 #include "global.h"
 void procedureblock()
 {
-	addSymTableLevel();
 	while (1)
 	{
 		procedurehead();
 		childprogram();
-		getSym();
-		if (symbol.type == _comma)
+		if (symbol.type == _semicolon)
 		{
+			popSymTableLevel();
 			getSym();
 			if (symbol.type != _procedure)
 			{
@@ -31,6 +30,9 @@ void procedurehead()
 	if (symbol.type == _identifier)
 	{
 		strcpy(procedurename, symbol.identifier);
+		symTableItem sym = { procedurename,{ procedurename,0,_procedure,0,0,0,0,0 } };
+		insertSymTable(sym);
+		addSymTableLevel();
 		getSym();
 		if (symbol.type == _lparenthese)
 		{
@@ -59,7 +61,7 @@ void procedurehead()
 				strcpy(s.params[i], params[i]);
 			}
 			symTableItem sym = { procedurename, s};
-			insertSymTable(sym);
+			updateSymTable(sym);
 			return;
 		}
 		else

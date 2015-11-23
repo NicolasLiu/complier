@@ -10,23 +10,45 @@ void insertSymTable(symTableItem sym)
 {
 	symbolTable.back().insert(sym);
 }
-int findSymTable(string name)
+void updateSymTable(symTableItem sym)
 {
-	for(unordered_map<string, symItem> s : symbolTable)
+	list<unordered_map<string, symItem>>::reverse_iterator iter;
+	for (iter = symbolTable.rbegin(); iter != symbolTable.rend(); iter++)
 	{
-		if (s.end() != s.find(name))
+		unordered_map<string, symItem>::iterator iter2 = iter->find(sym.first);
+		if (iter->end() != iter2)
 		{
-			return 1;
+			iter->erase(sym.first);
+			iter->insert(sym);
+			return;
+		}
+	}
+	symbolTable.back().insert(sym);
+}
+symItem findSymTable(string name)
+{
+	list<unordered_map<string, symItem>>::reverse_iterator iter;
+	for (iter = symbolTable.rbegin(); iter != symbolTable.rend(); iter++)
+	{
+		unordered_map<string, symItem>::iterator iter2 = iter->find(name);
+		if (iter->end() != iter2)
+		{
+			return iter2->second;
 		}
 	} 
-	return 0;
+	return {};
 }
-int findSymTableLocal(string name)
+symItem findSymTableLocal(string name)
 {
 	unordered_map<string, symItem> s = symbolTable.back();
-	if (s.end() != s.find(name))
+	unordered_map<string, symItem>::iterator iter = s.find(name);
+	if (s.end() != iter)
 	{
-		return 1;
+		return iter->second;
 	}
-	return 0;
+	return{};
+}
+void popSymTableLevel()
+{
+	symbolTable.pop_back();
 }

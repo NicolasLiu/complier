@@ -21,7 +21,7 @@ enum symbolType//Symbol类型
 };
 enum quaternion_op//四元式操作符类型
 {
-	q_add = 1, q_sub, q_mul, q_div, q_je, q_jne, q_jz, q_jg, q_jge, q_jl, q_jle, q_call, q_mov
+	q_add = 1, q_sub, q_mul, q_div, q_je, q_jne, q_jz, q_jg, q_jge, q_jl, q_jle, q_param, q_call, q_mov
 };
 
 typedef struct _reserved//保留字结构体
@@ -89,12 +89,28 @@ void formalparam(char[][100], int*);
 //function.cpp
 void functionblock();
 void functionhead();
-//compound.cpp
+//sentence.cpp
 void compound();
+void read();
+void write();
+void forloop();
+void dowhile();
+void sentence();
+void assignment();
+void ifsentence();
+void callprocedure();
 //symboltable.cpp
 void addSymTableLevel();
 void insertSymTable(symTableItem sym);
-int findSymTable(string name);
-int findSymTableLocal(string name);
+void updateSymTable(symTableItem sym);
+symItem findSymTable(string name);
+symItem findSymTableLocal(string name);
+void popSymTableLevel();
+//expression.cpp
+void expression();
+void term();
+void facter();
+void callfunction();
+
 
 

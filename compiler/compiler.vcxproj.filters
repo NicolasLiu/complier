@@ -39,10 +39,13 @@
     <ClCompile Include="function.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="compound.cpp">
+    <ClCompile Include="symboltable.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="symboltable.cpp">
+    <ClCompile Include="sentence.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="expression.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

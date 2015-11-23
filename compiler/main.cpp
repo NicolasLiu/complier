@@ -30,6 +30,7 @@ int main()
 	input_init();
 	reserved_init();
 
+
 	program();
 	return 0;
 }

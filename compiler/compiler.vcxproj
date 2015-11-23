@@ -146,7 +146,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="compound.cpp" />
+    <ClCompile Include="expression.cpp" />
+    <ClCompile Include="sentence.cpp" />
     <ClCompile Include="const.cpp" />
     <ClCompile Include="error.cpp" />
     <ClCompile Include="function.cpp" />

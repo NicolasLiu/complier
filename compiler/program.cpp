@@ -1,15 +1,14 @@
 #include "global.h"
 void program()
 {
+	addSymTableLevel();
 	childprogram();
-	getSym();
-	if (!(symbol.type == _comma))
+	if (!(symbol.type == _fullpoint))
 		error(3);
 	return;
 }
 void childprogram()
 {
-	addSymTableLevel();
 	getSym();
 	if (symbol.type == _const)//const
 	{
@@ -34,6 +33,12 @@ void childprogram()
 			break;
 		}
 	}
-	compound();//∏¥∫œ”Ôæ‰
-	
+	if (symbol.type == _begin)
+	{
+		compound();//∏¥∫œ”Ôæ‰
+	}
+	else
+	{
+		error(1);//»±…Ÿbegin
+	}
 }
