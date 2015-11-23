@@ -151,11 +151,11 @@ void dowhile()
 void ifsentence()
 {
 	getSym();
-	expression();
+	operand arg1 = expression();
 	if (symbol.type == _equal || symbol.type == _less || symbol.type == _lessequal || symbol.type == _lessmore || symbol.type == _more || symbol.type == _moreequal)
 	{
 		getSym();
-		expression();
+		operand arg2 = expression();
 		if (symbol.type == _then)
 		{
 			getSym();
@@ -242,26 +242,28 @@ void callprocedure()
 }
 void assignment()
 {
+	operand dst = { 0,0,symbol.identifier };
 	getSym();
 	if (symbol.type == _assign)
 	{
 		getSym();
-		expression();
-
+		operand src = expression();
+		gen_icode(q_mov, dst, src, {});
 	} 
 	else if (symbol.type == _lbracket)
 	{
 		getSym();
-		expression();
-
+		operand dst2 = expression();
 		if (symbol.type == _rbracket)
 		{
+			operand temp = alloc_temp();
+			gen_icode(q_array, dst, dst2, temp);
 			getSym();
 			if (symbol.type == _assign)
 			{
 				getSym();
-				expression();
-
+				operand src = expression();
+				gen_icode(q_mov, temp, src, {});
 			}
 		}
 		else

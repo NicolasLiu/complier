@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="expression.cpp" />
+    <ClCompile Include="i_code.cpp" />
     <ClCompile Include="sentence.cpp" />
     <ClCompile Include="const.cpp" />
     <ClCompile Include="error.cpp" />

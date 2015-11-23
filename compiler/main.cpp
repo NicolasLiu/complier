@@ -23,13 +23,13 @@ ReservedWord reservedTable[_max_num] = { {1,"const"}, {2,"var"},{3,"array"},{4,"
 								{41,">="}, {42,"string"},{43,"character"} };//初始化保留字表
 int returnChar;//是否需要退回一个char
 int errorNum;//错误数量
+int temp_var_t;//中间代码临时变量标号
 
 int main()
 {
 	
 	input_init();
 	reserved_init();
-
 
 	program();
 	return 0;

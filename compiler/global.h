@@ -2,6 +2,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <cwctype>
 #include <unordered_map>
@@ -21,7 +22,7 @@ enum symbolType//Symbol类型
 };
 enum quaternion_op//四元式操作符类型
 {
-	q_add = 1, q_sub, q_mul, q_div, q_je, q_jne, q_jz, q_jg, q_jge, q_jl, q_jle, q_param, q_call, q_mov
+	q_add = 1, q_sub, q_mul, q_div, q_j, q_je, q_jne, q_jz, q_jg, q_jge, q_jl, q_jle, q_param, q_call, q_mov, q_procedure, q_function, q_label, q_array
 };
 
 typedef struct _reserved//保留字结构体
@@ -49,6 +50,20 @@ typedef struct _symbolitem//符号表中的一项
 	char params[10][100];//函数或过程参数名称
 }symItem;
 typedef pair <string, symItem> symTableItem;
+typedef struct _operand//操作数或结果
+{
+	int type;//1表示数字,0表示变量名
+	int value;//type==1时使用
+	string name;//type==0时使用
+
+} operand;
+typedef struct _quaternion//四元式结构
+{
+	int op;
+	operand arg1;
+	operand arg2;
+	operand answer;
+}quaternion;
 
 extern char sBuffer[1000];//源代码行缓冲区
 extern int sLine;//源代码当前行数
@@ -62,8 +77,10 @@ extern ReservedWord reservedTable[_max_num];//初始化保留字表
 extern Symbol symbol;//当前单词
 extern int returnChar;//是否需要退回一个char
 extern int errorNum;//错误数量
-
+extern int temp_var_t;//中间代码临时变量标号
 extern list<unordered_map<string, symItem>> symbolTable;//符号表
+extern list<quaternion> quaternionList;//四元式列表
+
 //error.cpp
 int error(int);
 //getSym.cpp
@@ -107,10 +124,12 @@ symItem findSymTable(string name);
 symItem findSymTableLocal(string name);
 void popSymTableLevel();
 //expression.cpp
-void expression();
-void term();
-void facter();
+operand expression();
+operand term();
+operand facter();
 void callfunction();
-
+//i_code.cpp
+operand alloc_temp();
+void gen_icode(int op, operand arg1, operand arg2, operand answer);
 
 
