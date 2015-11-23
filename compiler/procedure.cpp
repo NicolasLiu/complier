@@ -16,7 +16,7 @@ void procedureblock()
 		}
 		else
 		{
-			error(1);//应以分号结束
+			error(11);//缺少;
 		}
 	}
 	
@@ -49,7 +49,7 @@ void procedurehead()
 			}
 			else
 			{
-				error(1);//过程说明部分缺少右括号
+				error(12);//缺少)
 			}
 			
 		}
@@ -67,12 +67,12 @@ void procedurehead()
 		}
 		else
 		{
-			error(1);//应以分号结束
+			error(11);//缺少;
 		}
 	}
 	else
 	{
-		error(1);//过程标识符错误
+		error(24);//非法的过程标识符
 	}
 }
 void formalparam(char params[][100], int *num)
@@ -105,13 +105,17 @@ void formalparam(char params[][100], int *num)
 				}
 				return;
 			}
+			else
+			{
+				error(26);//非法的参数类型
+			}
 		}
 		else
 		{
-			error(1);//过程或函数参数错误
+			error(25);//非法的参数
 		}
 	}
 
-	error(1);//过程或函数参数错误
+	error(25);//非法的参数
 
 }

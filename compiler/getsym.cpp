@@ -142,7 +142,7 @@ int getSym()
 				getChar();
 				if (ch < 32 || ch>126)
 				{
-					error(3);//字符串中包括非法内容
+					error(2);//非法的字符串
 				}
 				symbol.identifier[i++] = ch;
 			} while (ch != '"');
@@ -169,10 +169,10 @@ int getSym()
 		}
 		else
 		{
-			error(1);//不是一个字符
 			symbol.type = 0;
 			symbol.value = 0;
 			symbol.identifier[0] = 0;
+			error(1);//非法的字符
 		}
 	}
 	else if (ch == '+')
@@ -249,7 +249,7 @@ int getSym()
 	}
 	else
 	{
-		error(2);//不是已知的Symbol
+		error(3);//未知的单词
 	}
 	return 0;
 }

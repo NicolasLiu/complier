@@ -4,7 +4,7 @@ void program()
 	addSymTableLevel();
 	childprogram();
 	if (!(symbol.type == _fullpoint))
-		error(3);
+		error(22);//»±…Ÿ.
 	return;
 }
 void childprogram()
@@ -39,6 +39,6 @@ void childprogram()
 	}
 	else
 	{
-		error(1);//»±…Ÿbegin
+		error(23);//»±…Ÿbegin
 	}
 }

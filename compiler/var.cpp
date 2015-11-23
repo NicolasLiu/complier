@@ -51,7 +51,7 @@ void vardefine()
 										}
 										else
 										{
-											error(1);//数组格式错误
+											error(32);//非法的类型
 										}
 									}
 									else
@@ -81,7 +81,7 @@ void vardefine()
 						getSym();
 						if (symbol.type != _semicolon)
 						{
-							error(1);//应以分号结尾
+							error(11);//缺少;
 						}
 						return;
 					}
@@ -95,7 +95,7 @@ void vardefine()
 						getSym();
 						if (symbol.type != _semicolon)
 						{
-							error(1);//应以分号结尾
+							error(11);//缺少;
 						}
 						return;
 					}
@@ -103,10 +103,10 @@ void vardefine()
 				}
 				else
 				{
-					error(4);//非法的类型
+					error(32);//非法的类型
 				}
 			}
 		}
 	}
-	error(1);//非法的标识符
+	error(29);//非法的标识符
 }

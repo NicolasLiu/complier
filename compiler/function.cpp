@@ -15,7 +15,7 @@ void functionblock()
 		}
 		else
 		{
-			error(1);//应以分号结束
+			error(11);//缺少;
 		}
 	}
 }
@@ -47,7 +47,7 @@ void functionhead()
 			}
 			else
 			{
-				error(1);//函数说明部分缺少右括号
+				error(12);//缺少)
 			}
 
 		}
@@ -71,23 +71,23 @@ void functionhead()
 				}
 				else
 				{
-					error(1);//应以分号结束
+					error(11);//缺少;
 				}
 			}
 			else
 			{
-				error(1);//函数返回值类型错误
+				error(28);//非法的返回值类型
 			}
 			
 		}
 		else
 		{
-			error(1);//函数首部缺少冒号
+			error(13);//缺少:
 		}
 		
 	}
 	else
 	{
-		error(1);//函数标识符错误
+		error(27);//非法的函数标识符
 	}
 }

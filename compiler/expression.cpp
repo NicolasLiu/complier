@@ -27,7 +27,7 @@ operand factor()
 				}
 				else
 				{
-					error(1);//缺少]
+					error(16);//缺少]
 				}
 			}
 			return rtn;
@@ -51,7 +51,7 @@ operand factor()
 		getSym();
 		if (symbol.type != _rparenthese)
 		{
-			error(1);//缺少)
+			error(12);//缺少)
 		}
 		return rtn;
 	}
@@ -128,7 +128,7 @@ void callfunction()
 		} while (symbol.type == _comma);
 		if (symbol.type != _rparenthese)
 		{
-			error(1);//缺少)
+			error(12);//缺少)
 		}
 		gen_icode(q_call, {}, {}, { 0,0,funcname });
 		getSym();

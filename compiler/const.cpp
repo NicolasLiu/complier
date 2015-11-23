@@ -12,7 +12,7 @@ void constblock()
 	}
 	else
 	{
-		error(1);//应以分号结尾
+		error(11);//缺少;
 	}
 	
 }
@@ -54,17 +54,17 @@ void constdefine()
 			}
 			else
 			{
-				error(4);//不是无符号整数
+				error(30);//非法的无符号整数
 			}
 		}
 		else
 		{
-			error(4);//不是等号
+			error(14);//缺少=
 		}
 	}
 	else
 	{
-		error(4);//不是标识符
+		error(29);//非法的标识符
 	}
 
 }

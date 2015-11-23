@@ -14,7 +14,7 @@ void read()
 			}
 			else
 			{
-				error(1);//非法的标识符
+				error(29);//非法的标识符
 			}
 		}
 		while (symbol.type == _comma);
@@ -26,7 +26,7 @@ void read()
 		}
 		else
 		{
-			error(1);//应以分号结尾
+			error(11);//缺少;
 		}
 	}
 
@@ -54,7 +54,7 @@ void write()
 				}
 				else
 				{
-					error(1);//写语句缺少右括号
+					error(12);//缺少)
 				}
 			}
 		}
@@ -68,7 +68,7 @@ void write()
 		}
 		else
 		{
-			error(1);//写语句缺少右括号
+			error(12);//缺少)
 		}
 	}
 }
@@ -86,7 +86,7 @@ void compound()
 	} 
 	else
 	{
-		error(1);//缺少end
+		error(21);//缺少end
 	}
 }
 void forloop()
@@ -127,22 +127,22 @@ void forloop()
 				}
 				else
 				{
-					error(1);//缺少do
+					error(20);//缺少do
 				}
 			}
 			else
 			{
-				error(1);//缺少to或downto
+				error(19);//缺少to或downto
 			}
 		}
 		else
 		{
-			error(1);//缺少:=
+			error(15);//缺少:=
 		}
 	}
 	else
 	{
-		error(1);//非法的标识符
+		error(29);//非法的标识符
 	}
 }
 void dowhile()
@@ -164,12 +164,12 @@ void dowhile()
 		}
 		else
 		{
-			error(1);//关系运算符错误
+			error(31);//非法的关系运算符
 		}
 	}
 	else
 	{
-		error(1);//缺少while
+		error(18);//缺少while
 	}
 
 }
@@ -197,12 +197,12 @@ void ifsentence()
 		}
 		else
 		{
-			error(1);//缺少then
+			error(17);//缺少then
 		}
 	}
 	else
 	{
-		error(1);//比较运算符错误
+		error(24);//非法的比较运算符
 	}
 }
 void sentence()
@@ -266,7 +266,7 @@ void callprocedure()
 		} while (symbol.type == _comma);
 		if (symbol.type != _rparenthese)
 		{
-			error(1);//缺少)
+			error(12);//缺少)
 		}
 		gen_icode(q_call, {}, {}, procedure);
 		getSym();
@@ -300,11 +300,11 @@ void assignment()
 		}
 		else
 		{
-			error(1);//缺少]
+			error(16);//缺少]
 		}
 	}
 	else
 	{
-		error(1);//缺少:=
+		error(15);//缺少:=
 	}
 }
