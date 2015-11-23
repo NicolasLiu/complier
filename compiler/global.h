@@ -17,12 +17,12 @@ enum symbolType//Symbol类型
 	_const = 1, _var, _array, _of, _integer, _char, _procedure, _function, _for, _if, _else, _then, _do, _while,
 	_downto, _to, _begin, _end, _read, _write,//保留字到此为止
 	_identifier, _constant, _plus, _sub, _multi, _div, _lparenthese, _rparenthese,
-	_lbracket, _rbracket, _semicolon, _comma, _fullpoint, _equal, _colon, _assign, _less, _lessequal,
+	_lbracket, _rbracket, _semicolon, _comma, _fullpoint, _colon, _assign, _equal, _less, _lessequal,
 	_lessmore, _more, _moreequal, _string, _character, _max_num
 };
 enum quaternion_op//四元式操作符类型
 {
-	q_add = 1, q_sub, q_mul, q_div, q_j, q_je, q_jne, q_jz, q_jg, q_jge, q_jl, q_jle, q_param, q_call, q_mov, q_procedure, q_function, q_label, q_array
+	q_add = 1, q_sub, q_mul, q_div, q_j, q_jne, q_jge, q_jg, q_je, q_jle, q_jl, q_param, q_call, q_return, q_mov, q_procedure, q_function, q_label, q_array, q_accumulate
 };
 
 typedef struct _reserved//保留字结构体
@@ -52,9 +52,9 @@ typedef struct _symbolitem//符号表中的一项
 typedef pair <string, symItem> symTableItem;
 typedef struct _operand//操作数或结果
 {
-	int type;//1表示数字,0表示变量名
+	int type;//1表示数字,0表示变量名,2表示字符串
 	int value;//type==1时使用
-	string name;//type==0时使用
+	string name;//type==0,2时使用
 
 } operand;
 typedef struct _quaternion//四元式结构
@@ -78,6 +78,7 @@ extern Symbol symbol;//当前单词
 extern int returnChar;//是否需要退回一个char
 extern int errorNum;//错误数量
 extern int temp_var_t;//中间代码临时变量标号
+extern int temp_label;//中间代码label标号
 extern list<unordered_map<string, symItem>> symbolTable;//符号表
 extern list<quaternion> quaternionList;//四元式列表
 
@@ -130,6 +131,8 @@ operand facter();
 void callfunction();
 //i_code.cpp
 operand alloc_temp();
+operand alloc_label();
 void gen_icode(int op, operand arg1, operand arg2, operand answer);
+void print_icode();
 
 

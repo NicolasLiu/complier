@@ -33,6 +33,7 @@ void procedurehead()
 		symTableItem sym = { procedurename,{ procedurename,0,_procedure,0,0,0,0,0 } };
 		insertSymTable(sym);
 		addSymTableLevel();
+		gen_icode(q_procedure, {}, {}, { 0,0,procedurename });
 		getSym();
 		if (symbol.type == _lparenthese)
 		{

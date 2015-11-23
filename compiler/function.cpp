@@ -31,6 +31,7 @@ void functionhead()
 		symTableItem sym = { functionname,{ functionname,0,_function,0,0,0,0,0 } };
 		insertSymTable(sym);
 		addSymTableLevel();
+		gen_icode(q_function, {}, {}, { 0,0,functionname });
 		getSym();
 		if (symbol.type == _lparenthese)
 		{

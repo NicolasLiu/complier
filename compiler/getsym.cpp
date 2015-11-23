@@ -1,4 +1,18 @@
 #include "global.h"
+unordered_map<string, int> reserved;//保留字表
+ReservedWord reservedTable[_max_num] = { { 1,"const" },{ 2,"var" },{ 3,"array" },{ 4,"of" },
+{ 5,"integer" },{ 6,"char" },{ 7,"procedure" },{ 8,"function" },
+{ 9,"for" },{ 10,"if" },{ 11,"else" },{ 12,"then" },
+{ 13,"do" },{ 14,"while" },{ 15,"downto" },{ 16,"to" },
+{ 17,"begin" },{ 18,"end" },{ 19,"read" },{ 20,"write" },//保留字到此为止，接下来不是保留字
+{ 21,"identifier" },{ 22,"constant" },{ 23,"+" },{ 24,"-" },
+{ 25,"*" },{ 26,"/" },{ 27,"(" },{ 28,")" },
+{ 29,"[" },{ 30,"]" },{ 31,";" },{ 32,"," },
+{ 33,"." },{ 34,":" },{ 35,":=" },{ 36,"=" },
+{ 37,"<" },{ 38,"<=" },{ 39,"<>" },{ 40,">" },
+{ 41,">=" },{ 42,"string" },{ 43,"character" } };//初始化保留字表
+int returnChar;//是否需要退回一个char
+
 int getSym()
 {
 	if (!returnChar) 

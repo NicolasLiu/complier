@@ -9,6 +9,7 @@ void read()
 			getSym();
 			if (symbol.type == _identifier)
 			{
+				gen_icode(q_param, {}, {}, { 0,0,symbol.identifier });
 				getSym();
 			}
 			else
@@ -20,6 +21,7 @@ void read()
 		if (symbol.type == _rparenthese)
 		{
 			getSym();
+			gen_icode(q_call, {}, {}, { 0,0,"read" });
 			return;
 		}
 		else
@@ -37,6 +39,7 @@ void write()
 		getSym();
 		if (symbol.type == _string)
 		{
+			gen_icode(q_param, {}, {}, { 2,0,symbol.identifier });
 			getSym();
 			if (symbol.type == _comma)
 			{
@@ -46,6 +49,7 @@ void write()
 			{
 				if (symbol.type == _rparenthese)
 				{
+					gen_icode(q_call, {}, {}, { 0,0,"write" });
 					return;
 				}
 				else
@@ -54,9 +58,11 @@ void write()
 				}
 			}
 		}
-		expression();
+		operand exp1 = expression();
 		if (symbol.type == _rparenthese)
 		{
+			gen_icode(q_param, {}, {}, exp1);
+			gen_icode(q_call, {}, {}, { 0,0,"write" });
 			getSym();
 			return;
 		}
@@ -88,19 +94,35 @@ void forloop()
 	getSym();
 	if (symbol.type == _identifier)
 	{
+		operand i = { 0,0,symbol.identifier };
 		getSym();
 		if (symbol.type == _assign)
 		{
 			getSym();
-			expression();
+			operand i_init = expression();
+			gen_icode(q_mov, i, i_init, {});
+			operand label = alloc_label();
+			gen_icode(q_label, {}, {}, label);
 			if (symbol.type == _to || symbol.type == _downto)
 			{
+				int mark = symbol.type;
 				getSym();
-				expression();
+				operand i_end = expression();
 				if (symbol.type == _do)
 				{
 					getSym();
 					sentence();
+					if (mark == _to)
+					{
+						gen_icode(q_accumulate, i, { 1,1 }, {});
+						gen_icode(q_jle, i, i_end, label);
+					} 
+					else
+					{
+						gen_icode(q_accumulate, i, { 1,-1 }, {});
+						gen_icode(q_jge, i, i_end, label);
+					}
+					
 					return;
 				}
 				else
@@ -125,16 +147,19 @@ void forloop()
 }
 void dowhile()
 {
+	operand label = alloc_label();
+	gen_icode(q_label, {}, {}, label);
 	sentence();
 	getSym();
 	if (symbol.type == _while)
 	{
 		getSym();
-		expression();
+		operand arg1 = expression();
 		if (symbol.type == _equal || symbol.type == _less || symbol.type == _lessequal || symbol.type == _lessmore || symbol.type == _more || symbol.type == _moreequal)
 		{
 			getSym();
-			expression();
+			operand arg2 = expression();
+			gen_icode(symbol.type - 30, arg1, arg2, label);
 			return;
 		}
 		else
@@ -154,12 +179,16 @@ void ifsentence()
 	operand arg1 = expression();
 	if (symbol.type == _equal || symbol.type == _less || symbol.type == _lessequal || symbol.type == _lessmore || symbol.type == _more || symbol.type == _moreequal)
 	{
+		int optype = symbol.type;
 		getSym();
 		operand arg2 = expression();
+		operand label = alloc_label();
+		gen_icode(optype - 30, {}, {}, label);
 		if (symbol.type == _then)
 		{
 			getSym();
 			sentence();
+			gen_icode(q_label, arg1, arg2, label);
 			if (symbol.type == _else)
 			{
 				getSym();
@@ -225,18 +254,21 @@ void sentence()
 }
 void callprocedure()
 {
+	operand procedure = { 0,0,symbol.identifier };
 	getSym();
 	if (symbol.type == _lparenthese)
 	{
 		do 
 		{
 			getSym();
-			expression();
+			operand p = expression();
+			gen_icode(q_param, {}, {}, p);
 		} while (symbol.type == _comma);
 		if (symbol.type != _rparenthese)
 		{
 			error(1);//»±…Ÿ)
 		}
+		gen_icode(q_call, {}, {}, procedure);
 		getSym();
 	}
 }
