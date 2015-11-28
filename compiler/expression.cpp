@@ -124,7 +124,7 @@ void callfunction()
 		{
 			getSym();
 			operand param = expression();
-			gen_icode(q_param, {}, {}, param);
+			gen_icode(q_push, {}, {}, param);
 		} while (symbol.type == _comma);
 		if (symbol.type != _rparenthese)
 		{

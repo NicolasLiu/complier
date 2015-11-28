@@ -9,7 +9,7 @@ void read()
 			getSym();
 			if (symbol.type == _identifier)
 			{
-				gen_icode(q_param, {}, {}, { 0,0,symbol.identifier });
+				gen_icode(q_push, {}, {}, { 0,0,symbol.identifier });
 				getSym();
 			}
 			else
@@ -39,7 +39,7 @@ void write()
 		getSym();
 		if (symbol.type == _string)
 		{
-			gen_icode(q_param, {}, {}, { 2,0,symbol.identifier });
+			gen_icode(q_push, {}, {}, { 2,0,symbol.identifier });
 			getSym();
 			if (symbol.type == _comma)
 			{
@@ -61,7 +61,7 @@ void write()
 		operand exp1 = expression();
 		if (symbol.type == _rparenthese)
 		{
-			gen_icode(q_param, {}, {}, exp1);
+			gen_icode(q_push, {}, {}, exp1);
 			gen_icode(q_call, {}, {}, { 0,0,"write" });
 			getSym();
 			return;
@@ -262,7 +262,7 @@ void callprocedure()
 		{
 			getSym();
 			operand p = expression();
-			gen_icode(q_param, {}, {}, p);
+			gen_icode(q_push, {}, {}, p);
 		} while (symbol.type == _comma);
 		if (symbol.type != _rparenthese)
 		{

@@ -1,5 +1,6 @@
 #include "global.h"
 #define sourceName "input.txt"
+#define asmName "out.asm"
 
 char sBuffer[1000];//源代码行缓冲区
 int sLine;//源代码当前行数
@@ -9,22 +10,17 @@ char chs[100];//当前正在分析的单词
 char ch;//下一个字符
 Symbol symbol;//当前读取到的单词
 ifstream fin;//源文件指针
+ofstream fout;//汇编文件指针
 
-
-
-int main()
-{
-	
-	input_init();
-	reserved_init();
-
-	program();
-	print_icode();
-	return 0;
-}
-void input_init()
+void io_init()
 {
 	fin.open(sourceName);
+	fout.open(asmName);
+}
+void io_close()
+{
+	fin.close();
+	fout.close();
 }
 void reserved_init()
 {
@@ -33,3 +29,17 @@ void reserved_init()
 		reserved.insert(reservedPair(reservedTable[i].name, reservedTable[i].value));
 	}
 }
+
+int main()
+{
+	
+	io_init();
+	reserved_init();
+
+	program();
+	print_icode();
+	gen_asm();
+	io_close();
+	return 0;
+}
+

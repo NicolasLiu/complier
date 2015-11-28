@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="asm.cpp" />
     <ClCompile Include="expression.cpp" />
     <ClCompile Include="i_code.cpp" />
     <ClCompile Include="sentence.cpp" />

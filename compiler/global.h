@@ -22,7 +22,7 @@ enum symbolType//Symbol类型
 };
 enum quaternion_op//四元式操作符类型
 {
-	q_add = 1, q_sub, q_mul, q_div, q_j, q_jne, q_jge, q_jg, q_je, q_jle, q_jl, q_param, q_call, q_return, q_mov, q_procedure, q_function, q_label, q_array, q_accumulate
+	q_add = 1, q_sub, q_mul, q_div, q_j, q_jne, q_jge, q_jg, q_je, q_jle, q_jl, q_push, q_call, q_return, q_mov, q_procedure, q_function, q_label, q_array, q_accumulate
 };
 
 typedef struct _reserved//保留字结构体
@@ -72,6 +72,7 @@ extern int sBufPos;//行缓冲区指针
 extern char chs[100];//当前正在分析的单词
 extern char ch;//下一个字符
 extern ifstream fin;//源文件指针
+extern ofstream fout;//汇编文件指针
 extern unordered_map<string, int> reserved;//保留字表
 extern ReservedWord reservedTable[_max_num];//初始化保留字表
 extern Symbol symbol;//当前单词
@@ -89,8 +90,7 @@ int getSym();
 char getChar();
 void printSym();
 //main.cpp
-void reserved_init();
-void input_init();
+
 //program.cpp
 void program();
 void childprogram();
@@ -134,5 +134,8 @@ operand alloc_temp();
 operand alloc_label();
 void gen_icode(int op, operand arg1, operand arg2, operand answer);
 void print_icode();
+//asm.cpp
+void gen_asm();
+
 
 
