@@ -24,23 +24,29 @@ void procedureblock()
 void procedurehead()
 {
 	char procedurename[100];
-	char params[10][100];
+	int params[MaxParams][2];
+	char paramName[MaxParams][100];
 	int num = 0;
 	getSym();
 	if (symbol.type == _identifier)
 	{
+		symItem symitem = findSymTable(symbol.identifier);
+		if (!symitem.name.empty())
+		{
+			error(42);//重定义的标识符
+		}
 		strcpy(procedurename, symbol.identifier);
 		symTableItem sym = { procedurename,{ procedurename,0,_procedure,0,0,0,0,0 } };
 		insertSymTable(sym);
 		addSymTableLevel();
-		gen_icode(q_procedure, {}, {}, { 0,0,procedurename });
+		gen_icode(q_procedure, {}, {}, { _procedure,0,0,procedurename });
 		getSym();
 		if (symbol.type == _lparenthese)
 		{
 			
 			do 
 			{
-				formalparam(params, &num);
+				formalparam(params, paramName, &num);
 				getSym();
 			} while (symbol.type == _semicolon);
 			if (symbol.type == _rparenthese)
@@ -59,10 +65,15 @@ void procedurehead()
 			symItem s = { procedurename,0,_procedure,0,0,0,0,num };
 			for (int i = 0; i < num; i++)
 			{
-				strcpy(s.params[i], params[i]);
+				s.params[i][0] = params[i][0];
+				s.params[i][1] = params[i][1];
 			}
 			symTableItem sym = { procedurename, s};
 			updateSymTable(sym);
+			for (int i = 0; i < num; i++)
+			{
+				gen_icode(q_push, {}, {}, { s.params[i][1],0,s.params[i][0],paramName[i] });
+			}
 			return;
 		}
 		else
@@ -75,7 +86,7 @@ void procedurehead()
 		error(24);//非法的过程标识符
 	}
 }
-void formalparam(char params[][100], int *num)
+void formalparam(int params[][2], char paramName[][100], int *num)
 {
 	int isVar = 0, n = 0;
 	getSym();
@@ -86,7 +97,13 @@ void formalparam(char params[][100], int *num)
 	}
 	while (symbol.type == _identifier)
 	{
-		strcpy(params[*num], symbol.identifier);
+		symItem sym = findSymTable(symbol.identifier);
+		if (!sym.name.empty())
+		{
+			error(42);//重定义的标识符
+		}
+		params[*num][0] = isVar;
+		strcpy(paramName[*num], symbol.identifier);
 		n++; (*num)++;
 		getSym();
 		if (symbol.type == _comma)
@@ -100,8 +117,9 @@ void formalparam(char params[][100], int *num)
 			{
 				for (int i = 0; i < n; i++)
 				{						
-					symTableItem sym = { params[*num - i - 1],{ params[*num - i - 1],_var,symbol.type,0,0,0,isVar } };
+					symTableItem sym = { paramName[*num - i - 1],{ paramName[*num - i - 1],_var,symbol.type,0,0,0,isVar } };
 					insertSymTable(sym);
+					params[*num - i - 1][1] = symbol.type;
 				}
 				return;
 			}
