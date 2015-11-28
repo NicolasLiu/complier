@@ -22,23 +22,29 @@ void functionblock()
 void functionhead()
 {
 	char functionname[100];
-	char params[10][100];
+	int params[MaxParams][2];
+	char paramName[MaxParams][100];
 	int num = 0;
 	getSym();
 	if (symbol.type == _identifier)
 	{
+		symItem symitem = findSymTable(symbol.identifier);
+		if (!symitem.name.empty())
+		{
+			error(42);//重定义的标识符
+		}
 		strcpy(functionname, symbol.identifier);
 		symTableItem sym = { functionname,{ functionname,0,_function,0,0,0,0,0 } };
 		insertSymTable(sym);
 		addSymTableLevel();
-		gen_icode(q_function, {}, {}, { 0,0,functionname });
+		gen_icode(q_function, {}, {}, { _function,0,0,functionname });
 		getSym();
 		if (symbol.type == _lparenthese)
 		{
 
 			do
 			{
-				formalparam(params, &num);
+				formalparam(params, paramName, &num);
 				getSym();
 			} while (symbol.type == _semicolon);
 			if (symbol.type == _rparenthese)
@@ -63,7 +69,8 @@ void functionhead()
 					symItem s = { functionname,0,_function,rtnType,0,0,0,num };
 					for (int i = 0; i < num; i++)
 					{
-						strcpy(s.params[i], params[i]);
+						s.params[i][0] = params[i][0];
+						s.params[i][1] = params[i][1];
 					}
 					symTableItem sym = { functionname, s };
 					updateSymTable(sym);

@@ -14,6 +14,11 @@ void vardefine()
 	int i = 0;
 	while (symbol.type == _identifier)
 	{
+		symItem sym = findSymTable(symbol.identifier);
+		if (!sym.name.empty())
+		{
+			error(42);//重定义的标识符
+		}
 		strcpy(names[i++], symbol.identifier);
 		getSym();
 		if (symbol.type == _comma)

@@ -12,6 +12,7 @@
 using namespace std;
 
 #define reservedNum 20
+#define MaxParams 10
 enum symbolType//Symbol类型
 {
 	_const = 1, _var, _array, _of, _integer, _char, _procedure, _function, _for, _if, _else, _then, _do, _while,
@@ -47,14 +48,15 @@ typedef struct _symbolitem//符号表中的一项
 	int upperbound;//上界
 	int isRef;//是否是引用
 	int paramnum;//函数或过程参数数量
-	char params[10][100];//函数或过程参数名称
+	int params[MaxParams][2];//函数或过程参数，[0]表示isRef，[1]表示_integer, _char
 }symItem;
 typedef pair <string, symItem> symTableItem;
 typedef struct _operand//操作数或结果
 {
-	int type;//1表示数字,0表示变量名,2表示字符串
-	int value;//type==1时使用
-	string name;//type==0,2时使用
+	int type;//_constant,_integer,_char,_string,_function,_procedure
+	int value;//_constant,_function时使用
+	int isvar;//_integer,_char时使用
+	string name;//_integer,_char,_string,_function,_procedure时使用
 
 } operand;
 typedef struct _quaternion//四元式结构
@@ -103,7 +105,7 @@ void vardefine();
 //procedure.cpp
 void procedureblock();
 void procedurehead();
-void formalparam(char[][100], int*);
+void formalparam(int[][2], char[][100], int*);
 //function.cpp
 void functionblock();
 void functionhead();
@@ -130,7 +132,7 @@ operand term();
 operand facter();
 void callfunction();
 //i_code.cpp
-operand alloc_temp();
+operand alloc_temp(int type);
 operand alloc_label();
 void gen_icode(int op, operand arg1, operand arg2, operand answer);
 void print_icode();

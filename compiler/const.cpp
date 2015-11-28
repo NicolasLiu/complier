@@ -23,6 +23,11 @@ void constdefine()
 	getSym();
 	if (symbol.type == _identifier)//标识符
 	{
+		symItem sym = findSymTable(symbol.identifier);
+		if (!sym.name.empty())
+		{
+			error(42);//重定义的标识符
+		}
 		int k = 1;//符号默认为正
 		strcpy(name, symbol.identifier);
 		getSym();

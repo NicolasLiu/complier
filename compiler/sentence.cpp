@@ -9,7 +9,20 @@ void read()
 			getSym();
 			if (symbol.type == _identifier)
 			{
-				gen_icode(q_push, {}, {}, { 0,0,symbol.identifier });
+				symItem sym = findSymTable(symbol.identifier);
+				if (sym.name.empty())
+				{
+					error(41);//未找到该标识符
+				}
+				else if (sym.type != _integer && sym.type != _char)
+				{
+					error(44);//参数类型不一致
+				}
+				else if (sym.dimension != 0)
+				{
+					error(44);//参数类型不一致
+				}
+				gen_icode(q_push, {}, {}, { symbol.type,0,0,symbol.identifier });
 				getSym();
 			}
 			else
@@ -21,7 +34,7 @@ void read()
 		if (symbol.type == _rparenthese)
 		{
 			getSym();
-			gen_icode(q_call, {}, {}, { 0,0,"read" });
+			gen_icode(q_call, {}, {}, { _procedure,0,0,"read" });
 			return;
 		}
 		else
@@ -39,7 +52,7 @@ void write()
 		getSym();
 		if (symbol.type == _string)
 		{
-			gen_icode(q_push, {}, {}, { 2,0,symbol.identifier });
+			gen_icode(q_push, {}, {}, { _string,0,0,symbol.identifier });
 			getSym();
 			if (symbol.type == _comma)
 			{
@@ -49,7 +62,7 @@ void write()
 			{
 				if (symbol.type == _rparenthese)
 				{
-					gen_icode(q_call, {}, {}, { 0,0,"write" });
+					gen_icode(q_call, {}, {}, { _procedure,0,0,"write" });
 					return;
 				}
 				else
@@ -62,7 +75,7 @@ void write()
 		if (symbol.type == _rparenthese)
 		{
 			gen_icode(q_push, {}, {}, exp1);
-			gen_icode(q_call, {}, {}, { 0,0,"write" });
+			gen_icode(q_call, {}, {}, { _procedure,0,0,"write" });
 			getSym();
 			return;
 		}
@@ -94,7 +107,12 @@ void forloop()
 	getSym();
 	if (symbol.type == _identifier)
 	{
-		operand i = { 0,0,symbol.identifier };
+		symItem sym = findSymTable(symbol.identifier);
+		if (sym.name.empty())
+		{
+			error(41);//未找到该标识符
+		}
+		operand i = { sym.type,0,0,symbol.identifier };
 		getSym();
 		if (symbol.type == _assign)
 		{
@@ -114,12 +132,12 @@ void forloop()
 					sentence();
 					if (mark == _to)
 					{
-						gen_icode(q_accumulate, i, { 1,1 }, {});
+						gen_icode(q_accumulate, i, { _constant,1 }, {});
 						gen_icode(q_jle, i, i_end, label);
 					} 
 					else
 					{
-						gen_icode(q_accumulate, i, { 1,-1 }, {});
+						gen_icode(q_accumulate, i, { _constant,-1 }, {});
 						gen_icode(q_jge, i, i_end, label);
 					}
 					
@@ -236,7 +254,7 @@ void sentence()
 		symItem sym = findSymTable(symbol.identifier);
 		if (sym.name.empty())
 		{
-			error(1);//未找到该标识符
+			error(41);//未找到该标识符
 		}
 		else
 		{
@@ -254,7 +272,9 @@ void sentence()
 }
 void callprocedure()
 {
-	operand procedure = { 0,0,symbol.identifier };
+	int paramNum = 0;
+	operand procedure = { _procedure,0,0,symbol.identifier };
+	symItem psym = findSymTable(procedure.name);
 	getSym();
 	if (symbol.type == _lparenthese)
 	{
@@ -262,6 +282,24 @@ void callprocedure()
 		{
 			getSym();
 			operand p = expression();
+			paramNum++;
+			if (paramNum > psym.paramnum)
+			{
+				error(44);//参数类型不一致
+			}
+			else
+			{
+				int temp_type = p.type == _constant ? _integer : p.type;
+				if (temp_type != psym.params[paramNum - 1][1])
+				{
+					error(44);//参数类型不一致
+				}
+				else if (psym.params[paramNum - 1][0] == 1 && p.name[0] == '_')
+				{
+					error(43);//var类型参数应对应变量
+				}
+			}
+				
 			gen_icode(q_push, {}, {}, p);
 		} while (symbol.type == _comma);
 		if (symbol.type != _rparenthese)
@@ -274,12 +312,17 @@ void callprocedure()
 }
 void assignment()
 {
-	operand dst = { 0,0,symbol.identifier };
+	symItem asym = findSymTable(symbol.identifier);
+	operand dst = { asym.type,0,0,symbol.identifier };
 	getSym();
 	if (symbol.type == _assign)
 	{
 		getSym();
 		operand src = expression();
+		if (src.type == _integer && dst.type == _char)
+		{
+			error(47);//赋值操作错误
+		}
 		gen_icode(q_mov, dst, src, {});
 	} 
 	else if (symbol.type == _lbracket)
@@ -288,13 +331,17 @@ void assignment()
 		operand dst2 = expression();
 		if (symbol.type == _rbracket)
 		{
-			operand temp = alloc_temp();
+			operand temp = alloc_temp(dst.type);
 			gen_icode(q_array, dst, dst2, temp);
 			getSym();
 			if (symbol.type == _assign)
 			{
 				getSym();
 				operand src = expression();
+				if (src.type == _integer && temp.type == _char)
+				{
+					error(47);//赋值操作错误
+				}
 				gen_icode(q_mov, temp, src, {});
 			}
 		}

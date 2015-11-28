@@ -3,11 +3,11 @@ int temp_var_t;//中间代码临时变量标号
 int temp_label;//中间代码label标号
 list<quaternion> quaternionList;
 string opType[20] = { "+","-","*","/","j","jne","jge","jg","je","jle","jl","push","call","return","mov","procedure","function","label","array" ,"accumulate" };
-operand alloc_temp()
+operand alloc_temp(int type)
 {
 	stringstream ss;
 	ss << "_t" << temp_var_t;
-	operand rtn = { 0,0,ss.str() };
+	operand rtn = { type,0,0,ss.str() };
 	temp_var_t++;
 	return rtn;
 }
@@ -15,30 +15,31 @@ operand alloc_label()
 {
 	stringstream ss;
 	ss << "label_" << temp_label;
-	operand rtn = { 0,0,ss.str() };
+	operand rtn = { _string,0,0,ss.str() };
 	temp_label++;
 	return rtn;
 }
 void gen_icode(int op, operand arg1, operand arg2, operand answer)
 {
+	if (errorNum)
+	{
+		return;
+	}
 	quaternionList.push_back({ op,arg1,arg2,answer });
 }
 string print_oprand(operand op)
 {
-	if (op.type == 0)
+	if (op.type == _string || op.type == _function || op.type == _procedure || op.type == _integer || op.type == _char)
 	{
 		return op.name;
 	} 
-	else if (op.type == 2)//string
-	{
-		return op.name;
-	}
-	else
+	else if(op.type == _constant)
 	{
 		stringstream ss;
 		ss << op.value;
 		return ss.str();
 	}
+	return "";
 }
 void print_icode()
 {
