@@ -2,7 +2,7 @@
 int temp_var_t;//中间代码临时变量标号
 int temp_label;//中间代码label标号
 list<quaternion> quaternionList;
-string opType[20] = { "+","-","*","/","j","jne","jge","jg","je","jle","jl","push","call","return","mov","procedure","function","label","array" ,"accumulate" };
+string opType[40] = { "+","-","*","/","j","jne","jge","jg","je","jle","jl","push","call","return","mov","procedure","function","label","array" ,"accumulate","begin","end","alloc","local" };
 operand alloc_temp(int type)
 {
 	stringstream ss;
@@ -51,7 +51,15 @@ void print_icode()
 	{
 		if (q.op == q_function || q.op == q_procedure || q.op == q_label)
 		{
-			cout << print_oprand(q.answer) << ":";
+			cout << print_oprand(q.answer) << ":" << endl;
+		}
+		else if (q.op == q_begin)
+		{
+			cout << "\tbegin" << endl;
+		}
+		else if (q.op == q_end)
+		{
+			cout << "\tend" << endl;
 		}
 		else
 		{

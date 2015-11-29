@@ -35,7 +35,16 @@ void childprogram()
 	}
 	if (symbol.type == _begin)
 	{
+		gen_icode(q_begin, {}, {}, {});
+		for (unordered_map<string, symItem>::iterator iter = symbolTable.back().begin(); iter != symbolTable.back().end(); ++iter)
+		{
+			if (iter->second.constvar == _var && iter->second.type == _integer&& iter->second.type == _char)
+			{
+				gen_icode(q_local, {}, {}, { iter->second.type,0,0,iter->second.name });
+			}
+		}
 		compound();//∏¥∫œ”Ôæ‰
+		gen_icode(q_end, {}, {}, {});
 	}
 	else
 	{

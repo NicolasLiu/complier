@@ -23,7 +23,7 @@ void constdefine()
 	getSym();
 	if (symbol.type == _identifier)//标识符
 	{
-		symItem sym = findSymTable(symbol.identifier);
+		symItem sym = findSymTableLocal(symbol.identifier);
 		if (!sym.name.empty())
 		{
 			error(42);//重定义的标识符

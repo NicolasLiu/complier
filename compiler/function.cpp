@@ -28,7 +28,7 @@ void functionhead()
 	getSym();
 	if (symbol.type == _identifier)
 	{
-		symItem symitem = findSymTable(symbol.identifier);
+		symItem symitem = findSymTableLocal(symbol.identifier);
 		if (!symitem.name.empty())
 		{
 			error(42);//重定义的标识符
@@ -74,6 +74,10 @@ void functionhead()
 					}
 					symTableItem sym = { functionname, s };
 					updateSymTable(sym);
+					for (int i = 0; i < num; i++)
+					{
+						gen_icode(q_alloc, {}, {}, { s.params[i][1],0,s.params[i][0],paramName[i] });
+					}
 					return;
 				}
 				else

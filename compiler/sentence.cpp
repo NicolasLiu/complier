@@ -22,7 +22,7 @@ void read()
 				{
 					error(44);//参数类型不一致
 				}
-				gen_icode(q_push, {}, {}, { symbol.type,0,0,symbol.identifier });
+				gen_icode(q_push, {}, {}, { sym.type,0,0,symbol.identifier });
 				getSym();
 			}
 			else

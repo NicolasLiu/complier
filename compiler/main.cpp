@@ -20,6 +20,7 @@ void io_init()
 void io_close()
 {
 	fin.close();
+	fout.flush();
 	fout.close();
 }
 void reserved_init()

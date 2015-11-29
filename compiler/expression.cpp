@@ -12,7 +12,16 @@ operand factor()
 		} 
 		else if (sym.type == _integer || sym.type == _char)
 		{
-			operand rtn = { sym.type,0,0,symbol.identifier };
+			operand rtn;
+			if (sym.constvar == _const)
+			{
+				rtn = { _constant,sym.value };
+			} 
+			else
+			{
+				rtn = { sym.type,0,0,symbol.identifier };
+			}
+			
 			getSym();
 			if (symbol.type == _lbracket)
 			{

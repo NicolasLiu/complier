@@ -30,7 +30,7 @@ void procedurehead()
 	getSym();
 	if (symbol.type == _identifier)
 	{
-		symItem symitem = findSymTable(symbol.identifier);
+		symItem symitem = findSymTableLocal(symbol.identifier);
 		if (!symitem.name.empty())
 		{
 			error(42);//重定义的标识符
@@ -72,7 +72,7 @@ void procedurehead()
 			updateSymTable(sym);
 			for (int i = 0; i < num; i++)
 			{
-				gen_icode(q_push, {}, {}, { s.params[i][1],0,s.params[i][0],paramName[i] });
+				gen_icode(q_alloc, {}, {}, { s.params[i][1],0,s.params[i][0],paramName[i] });
 			}
 			return;
 		}
@@ -97,7 +97,7 @@ void formalparam(int params[][2], char paramName[][100], int *num)
 	}
 	while (symbol.type == _identifier)
 	{
-		symItem sym = findSymTable(symbol.identifier);
+		symItem sym = findSymTableLocal(symbol.identifier);
 		if (!sym.name.empty())
 		{
 			error(42);//重定义的标识符
