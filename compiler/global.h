@@ -6,6 +6,7 @@
 #include <string>
 #include <cwctype>
 #include <unordered_map>
+#include <vector>
 #include <list>
 #include <stack>
 #include <stdlib.h>
@@ -58,7 +59,8 @@ typedef struct _operand//操作数或结果
 	int value;//_constant,_function时使用
 	int isvar;//_integer,_char时使用
 	string name;//_integer,_char,_string,_function,_procedure时使用
-
+	int dimension;//维数
+	int upperbound;//上界
 } operand;
 typedef struct _quaternion//四元式结构
 {
@@ -84,7 +86,7 @@ extern int errorNum;//错误数量
 extern int temp_var_t;//中间代码临时变量标号
 extern int temp_label;//中间代码label标号
 extern list<unordered_map<string, symItem>> symbolTable;//符号表
-extern list<quaternion> quaternionList;//四元式列表
+extern vector<quaternion> quaternionList;//四元式列表
 
 //error.cpp
 int error(int);

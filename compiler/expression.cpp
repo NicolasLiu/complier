@@ -77,6 +77,12 @@ operand factor()
 		}
 		return rtn;
 	}
+	else
+	{
+		error(29);//非法的标识符
+		return{};
+	}
+	
 }
 operand term()
 {

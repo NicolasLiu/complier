@@ -7,6 +7,7 @@ void functionblock()
 		childprogram();
 		if (symbol.type == _semicolon)
 		{
+			popSymTableLevel();
 			getSym();
 			if (symbol.type != _function)
 			{

@@ -1,7 +1,7 @@
 #include "global.h"
 int temp_var_t;//中间代码临时变量标号
 int temp_label;//中间代码label标号
-list<quaternion> quaternionList;
+vector<quaternion> quaternionList;
 string opType[40] = { "+","-","*","/","j","jne","jge","jg","je","jle","jl","push","call","return","mov","procedure","function","label","array" ,"accumulate","begin","end","alloc","local" };
 operand alloc_temp(int type)
 {
@@ -29,7 +29,7 @@ void gen_icode(int op, operand arg1, operand arg2, operand answer)
 }
 string print_oprand(operand op)
 {
-	if (op.type == _string || op.type == _function || op.type == _procedure || op.type == _integer || op.type == _char)
+	if (op.type == _string || op.type == _function || op.type == _procedure || op.type == _integer || op.type == _char || op.type == _array)
 	{
 		return op.name;
 	} 
