@@ -282,7 +282,9 @@ void gen_asm_mov(vector<quaternion>::iterator iter)
 	//arg2区分
 	if (iter->arg2.type == _constant)//reg2是常数
 	{		
-		s_arg2 = iter->arg2.value;
+		stringstream ss;
+		ss << iter->arg2.value;
+		ss >> s_arg2;
 	} 
 	else
 	{
@@ -397,102 +399,151 @@ void gen_asm_add(vector<quaternion>::iterator iter)
 {
 	stringstream ss_proc;
 	ss_proc << asmStack.top().ss;
-	memManageItem arg1 = find_memManage(iter->arg1.name);
-	memManageItem arg2 = find_memManage(iter->arg2.name);
+	memManageItem arg1;
+	memManageItem arg2;
 	memManageItem answer = find_memManage(iter->answer.name);
 	int alloc_success1 = -1, alloc_success2 = -1;
 	if (answer.reg < 0)
 	{
 		string s_arg1, s_arg2;
-		if (arg1.reg < 0)
+		if (iter->arg1.type == _constant)
 		{
-			int regnum = alloc_register();
-			alloc_success1 = regnum;
-			if (regnum < 0)
-			{
-				ss_proc << "\t" << "push eax" << endl;
-				ss_proc << "\t" << "mov eax,[" << arg1.offset << "]" << endl;
-				s_arg1 = "eax";
-			} 
-			else
-			{
-				ss_proc << "\t" << "mov " << registername[regnum] << ",[" << arg1.offset << "]" << endl;
-				s_arg1 = registername[regnum];
-			}
+			stringstream ss;
+			ss << iter->arg1.value;
+			ss >> s_arg1;
 		}
 		else
 		{
-			s_arg1 = registername[arg1.reg];
-		}
-		if (arg2.reg < 0)
-		{
-			int regnum = alloc_register();
-			alloc_success2 = regnum;
-			if (regnum < 0)
+			arg1 = find_memManage(iter->arg1.name);
+			if (arg1.reg < 0)
 			{
-				ss_proc << "\t" << "push ebx" << endl;
-				ss_proc << "\t" << "mov ebx,[" << arg2.offset << "]" << endl;
-				s_arg2 = "eax";
+				int regnum = alloc_register();
+				alloc_success1 = regnum;
+				if (regnum < 0)
+				{
+					ss_proc << "\t" << "push eax" << endl;
+					ss_proc << "\t" << "mov eax,[" << arg1.offset << "]" << endl;
+					s_arg1 = "eax";
+				}
+				else
+				{
+					ss_proc << "\t" << "mov " << registername[regnum] << ",[" << arg1.offset << "]" << endl;
+					s_arg1 = registername[regnum];
+				}
 			}
 			else
 			{
-				ss_proc << "\t" << "mov " << registername[regnum] << ",[" << arg2.offset << "]" << endl;
-				s_arg2 = registername[regnum];
+				s_arg1 = registername[arg1.reg];
 			}
+		}
+		if (iter->arg2.type == _constant)
+		{
+			stringstream ss;
+			ss << iter->arg2.value;
+			ss >> s_arg2;
 		}
 		else
 		{
-			s_arg2 = registername[arg2.reg];
+			arg2 = find_memManage(iter->arg2.name);
+			if (arg2.reg < 0)
+			{
+				int regnum = alloc_register();
+				alloc_success2 = regnum;
+				if (regnum < 0)
+				{
+					ss_proc << "\t" << "push ebx" << endl;
+					ss_proc << "\t" << "mov ebx,[" << arg2.offset << "]" << endl;
+					s_arg2 = "eax";
+				}
+				else
+				{
+					ss_proc << "\t" << "mov " << registername[regnum] << ",[" << arg2.offset << "]" << endl;
+					s_arg2 = registername[regnum];
+				}
+			}
+			else
+			{
+				s_arg2 = registername[arg2.reg];
+			}
 		}
+		
 		ss_proc << "\t" << "mov [ebp" << answer.offset << "]," << s_arg1 << endl;
 		ss_proc << "\t" << "add [ebp" << answer.offset << "]," << s_arg2 << endl;
 		//恢复现场
-		if (arg1.reg < 0)
+		if (iter->arg1.type != _constant)
 		{
-			if (alloc_success1 == -1)
+			if (arg1.reg < 0)
 			{
-				ss_proc << "\t" << "pop eax" << endl;
-			}
-			else
-			{
-				free_register(alloc_success1);
+				if (alloc_success1 == -1)
+				{
+					ss_proc << "\t" << "pop eax" << endl;
+				}
+				else
+				{
+					free_register(alloc_success1);
+				}
 			}
 		}
-		if (arg2.reg < 0)
+		if (iter->arg2.type != _constant)
 		{
-			if (alloc_success2 == -1)
+			if (arg2.reg < 0)
 			{
-				ss_proc << "\t" << "pop ebx" << endl;
-			}
-			else
-			{
-				free_register(alloc_success2);
+				if (alloc_success2 == -1)
+				{
+					ss_proc << "\t" << "pop ebx" << endl;
+				}
+				else
+				{
+					free_register(alloc_success2);
+				}
 			}
 		}
+		
 	} 
 	else
 	{
 		string s_arg1, s_arg2;
-		if (arg1.reg < 0)
+		if (iter->arg1.type == _constant)
 		{
 			stringstream ss;
-			ss << "[ebp" << arg1.offset << "]";
-			s_arg1 = ss.str();
+			ss << iter->arg1.value;
+			ss >> s_arg1;
 		}
 		else
 		{
-			s_arg1 = registername[arg1.reg];
+			arg1 = find_memManage(iter->arg1.name);
+			if (arg1.reg < 0)
+			{
+				stringstream ss;
+				ss << "[ebp" << arg1.offset << "]";
+				s_arg1 = ss.str();
+			}
+			else
+			{
+				s_arg1 = registername[arg1.reg];
+			}
 		}
-		if (arg2.reg < 0)
+		if (iter->arg2.type == _constant)
 		{
 			stringstream ss;
-			ss << "[ebp" << arg2.offset << "]";
-			s_arg2 = ss.str();
+			ss << iter->arg2.value;
+			ss >> s_arg2;
 		}
 		else
 		{
-			s_arg2 = registername[arg2.reg];
+			arg2 = find_memManage(iter->arg2.name);
+			if (arg2.reg < 0)
+			{
+				stringstream ss;
+				ss << "[ebp" << arg2.offset << "]";
+				s_arg2 = ss.str();
+			}
+			else
+			{
+				s_arg2 = registername[arg2.reg];
+			}
 		}
+		
 		ss_proc << "\t" << "mov " << registername[answer.reg] << "," << s_arg1 << endl;
 		ss_proc << "\t" << "add " << registername[answer.reg] << "," << s_arg2 << endl;
 	}
@@ -502,102 +553,152 @@ void gen_asm_sub(vector<quaternion>::iterator iter)
 {
 	stringstream ss_proc;
 	ss_proc << asmStack.top().ss;
-	memManageItem arg1 = find_memManage(iter->arg1.name);
-	memManageItem arg2 = find_memManage(iter->arg2.name);
+	memManageItem arg1;
+	memManageItem arg2;
 	memManageItem answer = find_memManage(iter->answer.name);
 	int alloc_success1 = -1, alloc_success2 = -1;
 	if (answer.reg < 0)
 	{
 		string s_arg1, s_arg2;
-		if (arg1.reg < 0)
+		if (iter->arg1.type == _constant)
 		{
-			int regnum = alloc_register();
-			alloc_success1 = regnum;
-			if (regnum < 0)
-			{
-				ss_proc << "\t" << "push eax" << endl;
-				ss_proc << "\t" << "mov eax,[" << arg1.offset << "]" << endl;
-				s_arg1 = "eax";
-			}
-			else
-			{
-				ss_proc << "\t" << "mov " << registername[regnum] << ",[" << arg1.offset << "]" << endl;
-				s_arg1 = registername[regnum];
-			}
+			stringstream ss;
+			ss << iter->arg1.value;
+			ss >> s_arg1;
 		}
 		else
 		{
-			s_arg1 = registername[arg1.reg];
-		}
-		if (arg2.reg < 0)
-		{
-			int regnum = alloc_register();
-			alloc_success2 = regnum;
-			if (regnum < 0)
+			arg1 = find_memManage(iter->arg1.name);
+			if (arg1.reg < 0)
 			{
-				ss_proc << "\t" << "push ebx" << endl;
-				ss_proc << "\t" << "mov ebx,[" << arg2.offset << "]" << endl;
-				s_arg2 = "eax";
+				int regnum = alloc_register();
+				alloc_success1 = regnum;
+				if (regnum < 0)
+				{
+					ss_proc << "\t" << "push eax" << endl;
+					ss_proc << "\t" << "mov eax,[" << arg1.offset << "]" << endl;
+					s_arg1 = "eax";
+				}
+				else
+				{
+					ss_proc << "\t" << "mov " << registername[regnum] << ",[" << arg1.offset << "]" << endl;
+					s_arg1 = registername[regnum];
+				}
 			}
 			else
 			{
-				ss_proc << "\t" << "mov " << registername[regnum] << ",[" << arg2.offset << "]" << endl;
-				s_arg2 = registername[regnum];
+				s_arg1 = registername[arg1.reg];
 			}
+		}
+		
+		if (iter->arg2.type == _constant)
+		{
+			stringstream ss;
+			ss << iter->arg2.value;
+			ss >> s_arg2;
 		}
 		else
 		{
-			s_arg2 = registername[arg2.reg];
+			arg2 = find_memManage(iter->arg2.name);
+			if (arg2.reg < 0)
+			{
+				int regnum = alloc_register();
+				alloc_success2 = regnum;
+				if (regnum < 0)
+				{
+					ss_proc << "\t" << "push ebx" << endl;
+					ss_proc << "\t" << "mov ebx,[" << arg2.offset << "]" << endl;
+					s_arg2 = "eax";
+				}
+				else
+				{
+					ss_proc << "\t" << "mov " << registername[regnum] << ",[" << arg2.offset << "]" << endl;
+					s_arg2 = registername[regnum];
+				}
+			}
+			else
+			{
+				s_arg2 = registername[arg2.reg];
+			}
 		}
+		
 		ss_proc << "\t" << "mov [ebp" << answer.offset << "]," << s_arg1 << endl;
 		ss_proc << "\t" << "sub [ebp" << answer.offset << "]," << s_arg2 << endl;
 		//恢复现场
-		if (arg1.reg < 0)
+		if (iter->arg1.type != _constant)
 		{
-			if (alloc_success1 == -1)
+			if (arg1.reg < 0)
 			{
-				ss_proc << "\t" << "pop eax" << endl;
-			}
-			else
-			{
-				free_register(alloc_success1);
+				if (alloc_success1 == -1)
+				{
+					ss_proc << "\t" << "pop eax" << endl;
+				}
+				else
+				{
+					free_register(alloc_success1);
+				}
 			}
 		}
-		if (arg2.reg < 0)
+		if (iter->arg2.type != _constant)
 		{
-			if (alloc_success2 == -1)
+			if (arg2.reg < 0)
 			{
-				ss_proc << "\t" << "pop ebx" << endl;
-			}
-			else
-			{
-				free_register(alloc_success2);
+				if (alloc_success2 == -1)
+				{
+					ss_proc << "\t" << "pop ebx" << endl;
+				}
+				else
+				{
+					free_register(alloc_success2);
+				}
 			}
 		}
+		
 	}
 	else
 	{
 		string s_arg1, s_arg2;
-		if (arg1.reg < 0)
+		if (iter->arg1.type == _constant)
 		{
 			stringstream ss;
-			ss << "[ebp" << arg1.offset << "]";
-			s_arg1 = ss.str();
+			ss << iter->arg1.value;
+			ss >> s_arg1;
 		}
 		else
 		{
-			s_arg1 = registername[arg1.reg];
+			arg1 = find_memManage(iter->arg1.name);
+			if (arg1.reg < 0)
+			{
+				stringstream ss;
+				ss << "[ebp" << arg1.offset << "]";
+				s_arg1 = ss.str();
+			}
+			else
+			{
+				s_arg1 = registername[arg1.reg];
+			}
 		}
-		if (arg2.reg < 0)
+		if (iter->arg2.type == _constant)
 		{
 			stringstream ss;
-			ss << "[ebp" << arg2.offset << "]";
-			s_arg2 = ss.str();
+			ss << iter->arg2.value;
+			ss >> s_arg2;
 		}
 		else
 		{
-			s_arg2 = registername[arg2.reg];
+			arg2 = find_memManage(iter->arg2.name);
+			if (arg2.reg < 0)
+			{
+				stringstream ss;
+				ss << "[ebp" << arg2.offset << "]";
+				s_arg2 = ss.str();
+			}
+			else
+			{
+				s_arg2 = registername[arg2.reg];
+			}
 		}
+		
 		ss_proc << "\t" << "mov " << registername[answer.reg] << "," << s_arg1 << endl;
 		ss_proc << "\t" << "sub " << registername[answer.reg] << "," << s_arg2 << endl;
 	}
@@ -610,6 +711,40 @@ void gen_asm_mul(vector<quaternion>::iterator iter)
 void gen_asm_div(vector<quaternion>::iterator iter)
 {
 
+}
+void gen_asm_accumulate(vector<quaternion>::iterator iter)
+{
+	operand var = iter->arg1;
+	operand type = iter->arg2;
+	stringstream ss_proc;
+	string s;
+	ss_proc << asmStack.top().ss;
+	if (type.type == 1)
+	{
+		memManageItem mvar = find_memManage(var.name);
+		if (mvar.reg < 0)
+		{
+			ss_proc << "inc [ebp" << mvar.offset << "]" << endl;
+		}
+		else
+		{
+			ss_proc << "inc " << registername[mvar.reg] << endl;
+		}
+		
+	}
+	else
+	{
+		memManageItem mvar = find_memManage(var.name);
+		if (mvar.reg < 0)
+		{
+			ss_proc << "dec [ebp" << mvar.offset << "]" << endl;
+		}
+		else
+		{
+			ss_proc << "dec " << registername[mvar.reg] << endl;
+		}
+	}
+	asmStack.top().ss = ss_proc.str();
 }
 /*********************************************/
 void gen_asm()
@@ -639,10 +774,13 @@ void gen_asm()
 			gen_asm_add(iter);
 			break;
 		case q_sub:
+			gen_asm_sub(iter);
 			break;
 		case q_mul:
+			gen_asm_mul(iter);
 			break;
 		case q_div:
+			gen_asm_div(iter);
 			break;
 		case q_j:
 			break;
@@ -680,6 +818,7 @@ void gen_asm()
 			gen_asm_array(iter);
 			break;
 		case q_accumulate:
+			gen_asm_accumulate(iter);
 			break;
 		case q_begin:
 			gen_asm_begin();

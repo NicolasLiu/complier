@@ -149,6 +149,7 @@
     <ClCompile Include="asm.cpp" />
     <ClCompile Include="expression.cpp" />
     <ClCompile Include="i_code.cpp" />
+    <ClCompile Include="optimization.cpp" />
     <ClCompile Include="sentence.cpp" />
     <ClCompile Include="const.cpp" />
     <ClCompile Include="error.cpp" />

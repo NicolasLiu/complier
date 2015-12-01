@@ -36,8 +36,8 @@ int main()
 	
 	io_init();
 	reserved_init();
-
 	program();
+	optimization();
 	print_icode();
 	gen_asm();
 	io_close();

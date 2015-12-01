@@ -141,6 +141,8 @@ void gen_icode(int op, operand arg1, operand arg2, operand answer);
 void print_icode();
 //asm.cpp
 void gen_asm();
+//optimization.cpp
+void optimization();
 
 
 
