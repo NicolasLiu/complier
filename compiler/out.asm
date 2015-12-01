@@ -18,6 +18,12 @@ p1 proc
 	push edx
 	push edi
 	push esi
+	mov eax,[ebp-20]
+	mov ebx,[ebp-4]
+	mov [eax],ebx
+	pop ebx
+	mov eax,[ebp-20]
+	mov [-4],eax
 	pop esi
 	pop edi
 	pop edx
@@ -39,6 +45,10 @@ p2 proc
 	push edx
 	push edi
 	push esi
+	mov ecx,[ebp-24]
+	mov edx,[ebp-20]
+	mov [ecx],eax
+	mov [-4],eax
 label_0:
 	pop esi
 	pop edi
@@ -62,6 +72,8 @@ f1 proc
 	push edx
 	push edi
 	push esi
+	mov [-8],eax
+	mov [0],eax
 	pop esi
 	pop edi
 	pop edx
@@ -84,7 +96,15 @@ main proc
 	push 0
 	push 0
 	push 0
+	mov [-8],eax
+	mov [-4],
 label_1:
+	mov [-8],eax
+	mov [-16],eax
 label_2:
+	mov [-12],eax
+	mov ecx,[ebp-20]
+	mov esi,[ebp-24]
+	mov edi,[ebp-28]
 main endp
 
