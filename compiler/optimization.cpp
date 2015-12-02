@@ -6,6 +6,39 @@ void calc_constant()//消除常数运算
 	vector<quaternion>::iterator iter = quaternionList.begin();
 	while (iter != quaternionList.end())
 	{
+		if (iter->op == q_jne || iter->op == q_jge || iter->op == q_jg || iter->op == q_je || iter->op == q_jle || iter->op == q_jl)
+		{
+			operand arg1 = iter->arg1, arg2 = iter->arg2;
+			if (arg1.type = _constant && arg2.type == _constant)
+			{
+				int mark = 0;
+				switch (iter->op)
+				{
+				case q_jne:
+					mark = arg1.value != arg2.value;
+					break;
+				case q_jge:
+					mark = arg1.value >= arg2.value;
+					break;
+				case q_jg:
+					mark = arg1.value > arg2.value;
+					break;
+				case q_je:
+					mark = arg1.value == arg2.value;
+					break;
+				case q_jle:
+					mark = arg1.value <= arg2.value;
+					break;
+				case q_jl:
+					mark = arg1.value < arg2.value;
+					break;
+				}
+				if (mark)
+				{
+					iter->op = q_j;
+				}
+			}
+		}
 		if (!iter->arg1.name.empty())
 		{
 			unordered_map<string, int>::iterator iter_update = update.find(iter->arg1.name);
@@ -53,6 +86,7 @@ void calc_constant()//消除常数运算
 		iter++;
 	}
 }
+
 void optimization()
 {
 	calc_constant();

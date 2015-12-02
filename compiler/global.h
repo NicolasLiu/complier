@@ -25,7 +25,7 @@ enum symbolType//Symbol类型
 };
 enum quaternion_op//四元式操作符类型
 {
-	q_add = 1, q_sub, q_mul, q_div, q_j, q_jne, q_jge, q_jg, q_je, q_jle, q_jl, q_push, q_call, q_return, q_mov, q_procedure, q_function, q_label, q_array, q_accumulate, q_begin, q_end, q_alloc, q_local
+	q_add = 1, q_sub, q_mul, q_div, q_j, q_jne, q_jge, q_jg, q_je, q_jle, q_jl, q_push, q_call, q_mov, q_procedure, q_function, q_label, q_array, q_accumulate, q_begin, q_end, q_alloc, q_local
 };
 
 typedef struct _reserved//保留字结构体

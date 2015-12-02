@@ -201,12 +201,12 @@ void ifsentence()
 		getSym();
 		operand arg2 = expression();
 		operand label = alloc_label();
-		gen_icode(optype - 30, {}, {}, label);
+		gen_icode(optype - 30, arg1, arg2, label);
 		if (symbol.type == _then)
 		{
 			getSym();
 			sentence();
-			gen_icode(q_label, arg1, arg2, label);
+			gen_icode(q_label, {}, {}, label);
 			if (symbol.type == _else)
 			{
 				getSym();
@@ -294,12 +294,12 @@ void callprocedure()
 				{
 					error(44);//参数类型不一致
 				}
-				else if (psym.params[paramNum - 1][0] == 1 && p.name[0] == '_')
+				else if (psym.params[paramNum - 1][0] == 1 && p.type == _constant)
 				{
 					error(43);//var类型参数应对应变量
 				}
 			}
-				
+			p.isvar = psym.params[paramNum - 1][0];
 			gen_icode(q_push, {}, {}, p);
 		} while (symbol.type == _comma);
 		if (symbol.type != _rparenthese)
