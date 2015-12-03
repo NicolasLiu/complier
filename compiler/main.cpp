@@ -41,6 +41,7 @@ int main()
 	print_icode();
 	gen_asm();
 	io_close();
+	system("makeit.bat");
 	return 0;
 }
 

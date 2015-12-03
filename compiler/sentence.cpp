@@ -119,8 +119,12 @@ void forloop()
 			getSym();
 			operand i_init = expression();
 			gen_icode(q_mov, i, i_init, {});
-			operand label = alloc_label();
-			gen_icode(q_label, {}, {}, label);
+			operand label1 = alloc_label();
+			operand label2 = alloc_label();
+			operand label3 = alloc_label();
+			operand label4 = alloc_label();
+			gen_icode(q_j, {}, {}, label2);
+			gen_icode(q_label, {}, {}, label1);
 			if (symbol.type == _to || symbol.type == _downto)
 			{
 				int mark = symbol.type;
@@ -133,12 +137,27 @@ void forloop()
 					if (mark == _to)
 					{
 						gen_icode(q_accumulate, i, { _constant,1 }, {});
-						gen_icode(q_jle, i, i_end, label);
+						gen_icode(q_jle, i, i_end, label1);
+						gen_icode(q_j, {}, {}, label3);
+						gen_icode(q_label, {}, {}, label2);
+						gen_icode(q_jle, i, i_end, label1);
+						gen_icode(q_j, {}, {}, label4);
+						gen_icode(q_label, {}, {}, label3);
+						gen_icode(q_accumulate, i, { _constant,-1 }, {});
+						gen_icode(q_label, {}, {}, label4);
+						
 					} 
 					else
 					{
 						gen_icode(q_accumulate, i, { _constant,-1 }, {});
-						gen_icode(q_jge, i, i_end, label);
+						gen_icode(q_jle, i, i_end, label3);
+						gen_icode(q_j, {}, {}, label3);
+						gen_icode(q_label, {}, {}, label2);
+						gen_icode(q_jle, i, i_end, label1);
+						gen_icode(q_j, {}, {}, label4);
+						gen_icode(q_label, {}, {}, label3);
+						gen_icode(q_accumulate, i, { _constant,1 }, {});
+						gen_icode(q_label, {}, {}, label4);
 					}
 					
 					return;
@@ -205,13 +224,20 @@ void ifsentence()
 		if (symbol.type == _then)
 		{
 			getSym();
-			sentence();
-			gen_icode(q_label, {}, {}, label);
+			sentence();	
 			if (symbol.type == _else)
 			{
+				operand label2 = alloc_label();
+				gen_icode(q_j, {}, {}, label2);
+				gen_icode(q_label, {}, {}, label);
 				getSym();
 				sentence();
-			} 
+				gen_icode(q_label, {}, {}, label2);
+			}
+			else
+			{
+				gen_icode(q_label, {}, {}, label);
+			}
 		}
 		else
 		{

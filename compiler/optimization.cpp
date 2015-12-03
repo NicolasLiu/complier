@@ -58,7 +58,7 @@ void calc_constant()//消除常数运算
 		if (iter->op == q_add || iter->op == q_sub || iter->op == q_mul || iter->op == q_div)
 		{
 			operand arg1 = iter->arg1, arg2 = iter->arg2;
-			if (arg1.type = _constant && arg2.type == _constant)
+			if (arg1.type == _constant && arg2.type == _constant)
 			{
 				int result = 0;
 				string resultvar = iter->answer.name;
