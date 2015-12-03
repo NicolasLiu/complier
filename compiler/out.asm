@@ -200,7 +200,6 @@ f1 proc
 f1 endp
 
 main proc
-	cls
 	push ebp
 	mov ebp,esp  
 	push 0
@@ -212,14 +211,15 @@ main proc
 	push 0
 	push 0
 	push 0
+	push 0
 	push eax
-	mov value, input()
-	invoke atodw, reparg(value)
+	mov value, input("input a integer : ")
+	invoke atol, reparg(value)
 	mov [ebp-16],eax
 	pop eax
 	push eax
-	mov value, input()
-	invoke atodw, reparg(value)
+	mov value, input("input a integer : ")
+	invoke atol, reparg(value)
 	mov [ebp-12],eax
 	pop eax
 	push 0

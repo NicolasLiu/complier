@@ -273,7 +273,7 @@ void gen_asm_local(vector<quaternion>::iterator &iter)
 		{
 			if (iter->answer.dimension == 1)
 			{
-				for (int i = 0; i < iter->answer.upperbound; i++)
+				for (int i = 0; i <= iter->answer.upperbound; i++)
 				{
 					ss_proc << "\t" << "push" << " 0" << endl;
 				}
@@ -1393,8 +1393,8 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 					ss_proc << "\t" << "push eax" << endl;
 					ss_proc << "\t" << "push ebx" << endl;
 					ss_proc << "\t" << "mov ebx,[ebp" << setiosflags(ios::showpos) << item.offset << "]" << endl;
-					ss_proc << "\t" << "mov value, input()" << endl;
-					ss_proc << "\t" << "invoke atodw, reparg(value)" << endl;
+					ss_proc << "\t" << "mov value, input(\"input a integer : \")" << endl;
+					ss_proc << "\t" << "invoke atol, reparg(value)" << endl;
 					ss_proc << "\t" << "mov [ebx],eax" << endl;
 					ss_proc << "\t" << "pop ebx" << endl;
 					ss_proc << "\t" << "pop eax" << endl;
@@ -1406,8 +1406,8 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 						ss_proc << "\t" << "push eax" << endl;
 						ss_proc << "\t" << "push ebx" << endl;
 						ss_proc << "\t" << "mov ebx,[eax]" << endl;
-						ss_proc << "\t" << "mov value, input()" << endl;
-						ss_proc << "\t" << "invoke atodw, reparg(value)" << endl;
+						ss_proc << "\t" << "mov value, input(\"input a integer : \")" << endl;
+						ss_proc << "\t" << "invoke atol, reparg(value)" << endl;
 						ss_proc << "\t" << "mov [ebx],eax" << endl;
 						ss_proc << "\t" << "pop ebx" << endl;
 						ss_proc << "\t" << "pop eax" << endl;
@@ -1415,8 +1415,8 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 					else
 					{
 						ss_proc << "\t" << "push eax" << endl;
-						ss_proc << "\t" << "mov value, input()" << endl;
-						ss_proc << "\t" << "invoke atodw, reparg(value)" << endl;
+						ss_proc << "\t" << "mov value, input(\"input a integer : \")" << endl;
+						ss_proc << "\t" << "invoke atol, reparg(value)" << endl;
 						ss_proc << "\t" << "mov [" << registername[item.reg] << "],eax" << endl;
 						ss_proc << "\t" << "pop eax" << endl;
 					}
@@ -1426,8 +1426,8 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 			else
 			{
 				ss_proc << "\t" << "push eax" << endl;
-				ss_proc << "\t" << "mov value, input()" << endl;
-				ss_proc << "\t" << "invoke atodw, reparg(value)" << endl;
+				ss_proc << "\t" << "mov value, input(\"input a integer : \")" << endl;
+				ss_proc << "\t" << "invoke atol, reparg(value)" << endl;
 				if (item.level < currentLevel)
 				{
 					ss_proc << "\t" << "push ebp" << endl;
@@ -1751,7 +1751,7 @@ void gen_asm()
 	currentLevel++;
 	stringstream ss_main;
 	ss_main << currentProc << " proc" << endl;
-	ss_main << "\t" << "cls" << endl;
+	//ss_main << "\t" << "cls" << endl;
 	ss_main << "\t" << "push ebp" << endl;
 	ss_main << "\t" << "mov ebp,esp  " << endl;
 	asmStack.push({ currentProc, ss_main.str() ,0 });
