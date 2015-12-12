@@ -9,7 +9,7 @@ void calc_constant()//消除常数运算
 		if (iter->op == q_jne || iter->op == q_jge || iter->op == q_jg || iter->op == q_je || iter->op == q_jle || iter->op == q_jl)
 		{
 			operand arg1 = iter->arg1, arg2 = iter->arg2;
-			if (arg1.type = _constant && arg2.type == _constant)
+			if (arg1.type == _constant && arg2.type == _constant)
 			{
 				int mark = 0;
 				switch (iter->op)

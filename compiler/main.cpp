@@ -1,5 +1,5 @@
 #include "global.h"
-#define sourceName "input.txt"
+#define sourceName "input2.txt"
 #define asmName "out.asm"
 
 char sBuffer[1000];//源代码行缓冲区

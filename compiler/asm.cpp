@@ -315,7 +315,7 @@ void gen_asm_array(vector<quaternion>::iterator &iter)
 			{
 				ss_proc << "\t" << "pop ebp" << endl;
 			}
-			memManageItem ans = { iter->answer.name,regnum,currentLevel,arg1.offset - 4 * arg2.value ,1 };
+			memManageItem ans = { iter->answer.name,regnum,currentLevel,0 ,1 };
 			insert_memManage(ans);
 		} 
 		else
@@ -344,7 +344,246 @@ void gen_asm_array(vector<quaternion>::iterator &iter)
 	} 
 	else
 	{
-		//need to code
+		memManageItem arg2 = find_memManage(iter->arg2.name);
+		if (arg2.isRef)
+		{
+			if (arg2.reg < 0)
+			{
+				int regnum = alloc_register();
+				if (regnum >= 0)
+				{
+					if (arg2.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg2.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "mov " << registername[regnum] << ",[ebp" << setiosflags(ios::showpos) << arg2.offset << "]" << endl;
+					ss_proc << "\t" << "mov " << registername[regnum] << ",[" << registername[regnum] << "]" << endl;
+					ss_proc << "\t" << "shl " << registername[regnum] << ", 2" << endl;
+					ss_proc << "\t" << "neg " << registername[regnum] << endl;
+					if (arg2.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg1.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "lea " << registername[regnum] << ",[ebp" << setiosflags(ios::showpos) << arg1.offset << "+" << registername[regnum] << "]" << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+					memManageItem ans = { iter->answer.name,regnum,currentLevel,0 ,1 };
+					insert_memManage(ans);
+				}
+				else
+				{
+					asmStack.top().currentoffset -= 4;
+					ss_proc << "\t" << "push 0" << endl;
+					int pos = asmStack.top().currentoffset;
+					memManageItem ans = { iter->answer.name,-1,currentLevel, pos,1 };
+					insert_memManage(ans, 0);
+					ss_proc << "\t" << "push eax" << endl;
+					if (arg2.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg2.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "mov eax,[ebp" << setiosflags(ios::showpos) << arg2.offset << "]" << endl;
+					ss_proc << "\t" << "mov eax,[eax]" << endl;
+					ss_proc << "\t" << "shl eax, 2" << endl;
+					ss_proc << "\t" << "neg eax" << endl;
+					if (arg2.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg1.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "lea " << "eax,[ebp" << setiosflags(ios::showpos) << arg1.offset << "+eax]" << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+					ss_proc << "\t" << "mov " << "[ebp" << setiosflags(ios::showpos) << pos << "],eax" << endl;
+					ss_proc << "\t" << "pop eax" << endl;
+
+				}
+			}
+			else
+			{
+				int regnum = alloc_register();
+				if (regnum >= 0)
+				{
+
+					ss_proc << "\t" << "mov " << registername[regnum] << ",[" << registername[arg2.reg] << "]" << endl;
+					ss_proc << "\t" << "mov " << registername[regnum] << ",[" << registername[regnum] << "]" << endl;
+					ss_proc << "\t" << "shl " << registername[regnum] << ",2" << endl;
+					ss_proc << "\t" << "neg " << registername[regnum] << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg1.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "lea " << registername[regnum] << ",[ebp" << setiosflags(ios::showpos) << arg1.offset << "+" << registername[regnum] << "]" << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+					memManageItem ans = { iter->answer.name,regnum,currentLevel,0 ,1 };
+					insert_memManage(ans);
+				}
+				else
+				{
+					asmStack.top().currentoffset -= 4;
+					ss_proc << "\t" << "push 0" << endl;
+					int pos = asmStack.top().currentoffset;
+					memManageItem ans = { iter->answer.name,-1,currentLevel, pos,1 };
+					insert_memManage(ans, 0);
+					ss_proc << "\t" << "push eax" << endl;
+
+					ss_proc << "\t" << "mov eax,[" << registername[arg2.reg] << "]" << endl;
+					ss_proc << "\t" << "mov eax,[eax]" << endl;
+					ss_proc << "\t" << "shl eax,2" << endl;
+					ss_proc << "\t" << "neg eax" << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg1.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "lea " << "eax,[ebp" << setiosflags(ios::showpos) << arg1.offset << "+eax]" << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+					ss_proc << "\t" << "mov " << "[ebp" << setiosflags(ios::showpos) << pos << "],eax" << endl;
+					ss_proc << "\t" << "pop eax" << endl;
+
+				}
+			}
+		}
+		else
+		{
+			if (arg2.reg < 0)
+			{
+				int regnum = alloc_register();
+				if (regnum >= 0)
+				{
+					if (arg2.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg2.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "mov " << registername[regnum] << ",[ebp" << setiosflags(ios::showpos) << arg2.offset << "]" << endl;
+					ss_proc << "\t" << "shl " << registername[regnum] << ", 2" << endl;
+					ss_proc << "\t" << "neg " << registername[regnum] << endl;
+					if (arg2.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg1.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "lea " << registername[regnum] << ",[ebp" << setiosflags(ios::showpos) << arg1.offset << "+" << registername[regnum] << "]" << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+					memManageItem ans = { iter->answer.name,regnum,currentLevel,0 ,1 };
+					insert_memManage(ans);
+				}
+				else
+				{
+					asmStack.top().currentoffset -= 4;
+					ss_proc << "\t" << "push 0" << endl;
+					int pos = asmStack.top().currentoffset;
+					memManageItem ans = { iter->answer.name,-1,currentLevel, pos,1 };
+					insert_memManage(ans, 0);
+					ss_proc << "\t" << "push eax" << endl;
+					if (arg2.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg2.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "mov eax,[ebp" << setiosflags(ios::showpos) << arg2.offset << "]" << endl;
+					ss_proc << "\t" << "shl eax, 2" << endl;
+					ss_proc << "\t" << "neg eax" << endl;
+					if (arg2.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg1.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "lea " << "eax,[ebp" << setiosflags(ios::showpos) << arg1.offset << "+eax]" << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+					ss_proc << "\t" << "mov " << "[ebp" << setiosflags(ios::showpos) << pos << "],eax" << endl;
+					ss_proc << "\t" << "pop eax" << endl;
+
+				}
+			}
+			else
+			{
+				int regnum = alloc_register();
+				if (regnum >= 0)
+				{
+
+					ss_proc << "\t" << "shl " << registername[regnum] << ",2" << endl;
+					ss_proc << "\t" << "neg " << registername[regnum] << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg1.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "lea " << registername[regnum] << ",[ebp" << setiosflags(ios::showpos) << arg1.offset << "+" << registername[regnum] << "]" << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+					memManageItem ans = { iter->answer.name,regnum,currentLevel,0 ,1 };
+					insert_memManage(ans);
+				}
+				else
+				{
+					asmStack.top().currentoffset -= 4;
+					ss_proc << "\t" << "push 0" << endl;
+					int pos = asmStack.top().currentoffset;
+					memManageItem ans = { iter->answer.name,-1,currentLevel, pos,1 };
+					insert_memManage(ans, 0);
+					ss_proc << "\t" << "push eax" << endl;
+
+					ss_proc << "\t" << "mov eax," << registername[arg2.reg] << endl;
+					ss_proc << "\t" << "shl eax,2" << endl;
+					ss_proc << "\t" << "neg eax" << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "push ebp" << endl;
+						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg1.level - currentLevel - 1) << "]" << endl;
+					}
+					ss_proc << "\t" << "lea " << "eax,[ebp" << setiosflags(ios::showpos) << arg1.offset << "+eax]" << endl;
+					if (arg1.level < currentLevel)
+					{
+						ss_proc << "\t" << "pop ebp" << endl;
+					}
+					ss_proc << "\t" << "mov " << "[ebp" << setiosflags(ios::showpos) << pos << "],eax" << endl;
+					ss_proc << "\t" << "pop eax" << endl;
+
+				}
+			}
+		}
 	}
 	
 
@@ -824,7 +1063,7 @@ void gen_asm_mul(vector<quaternion>::iterator &iter)
 	memManageItem arg1;
 	memManageItem arg2;
 	memManageItem answer;
-	int mark1 = 0, mark2 = 0;
+	int mark1 = 0, mark2 = 0, free1 = -1, free2 = -1;
 	int regnum = alloc_register();
 	if (regnum < 0)
 	{
@@ -846,12 +1085,22 @@ void gen_asm_mul(vector<quaternion>::iterator &iter)
 		{
 			if (arg1.reg < 0)
 			{
-				stringstream ss;
-				ss_proc << "\t" << "push eax" << endl;
-				ss_proc << "\t" << "mov eax,[ebp" << setiosflags(ios::showpos) << arg1.offset << "]" << endl;
-				ss_proc << "\t" << "mov eax,[eax]" << endl;
-				s_arg1 = "eax";
-				mark1 = 1;
+				free1 = alloc_register();
+				if (free1 < 0)
+				{
+					ss_proc << "\t" << "push eax" << endl;
+					ss_proc << "\t" << "mov eax,[ebp" << setiosflags(ios::showpos) << arg1.offset << "]" << endl;
+					ss_proc << "\t" << "mov eax,[eax]" << endl;
+					s_arg1 = "eax";
+					mark1 = 1;
+				} 
+				else
+				{
+					ss_proc << "\t" << "mov " << registername[free1] << ",[ebp" << setiosflags(ios::showpos) << arg1.offset << "]" << endl;
+					ss_proc << "\t" << "mov " << registername[free1] << ",[" << registername[free1] << "]" << endl;
+					s_arg1 = registername[free1];
+				}
+				
 			}
 			else
 			{
@@ -899,11 +1148,22 @@ void gen_asm_mul(vector<quaternion>::iterator &iter)
 		{
 			if (arg2.reg < 0)
 			{
-				ss_proc << "\t" << "push ebx" << endl;
-				ss_proc << "\t" << "mov ebx,[ebp" << setiosflags(ios::showpos) << arg2.offset << "]" << endl;
-				ss_proc << "\t" << "mov ebx,[ebx]" << endl;
-				s_arg2 = "ebx";
-				mark2 = 1;
+				free2 = alloc_register();
+				if (free2 < 0)
+				{
+					ss_proc << "\t" << "push ebx" << endl;
+					ss_proc << "\t" << "mov ebx,[ebp" << setiosflags(ios::showpos) << arg2.offset << "]" << endl;
+					ss_proc << "\t" << "mov ebx,[ebx]" << endl;
+					s_arg2 = "ebx";
+					mark2 = 1;
+				} 
+				else
+				{
+					ss_proc << "\t" << "mov " << registername[free2] << ",[ebp" << setiosflags(ios::showpos) << arg2.offset << "]" << endl;
+					ss_proc << "\t" << "mov " << registername[free2] << ",[" << registername[free2] << "]" << endl;
+					s_arg2 = registername[free2];
+				}
+				
 			}
 			else
 			{
@@ -956,7 +1216,14 @@ void gen_asm_mul(vector<quaternion>::iterator &iter)
 		ss_proc << "\t" << "mov " << registername[regnum] << "," << s_arg1 << endl;
 		ss_proc << "\t" << "imul " << registername[regnum] << "," << s_arg2 << endl;
 	}
-	
+	if (free1 >= 0)
+	{
+		free_register(free1);
+	}
+	if (free2 >= 0)
+	{
+		free_register(free2);
+	}
 	if (mark2)
 	{
 		ss_proc << "\t" << "pop ebx" << endl;

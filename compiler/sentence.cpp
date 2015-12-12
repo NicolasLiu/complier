@@ -63,6 +63,7 @@ void write()
 				if (symbol.type == _rparenthese)
 				{
 					gen_icode(q_call, {}, {}, { _procedure,0,0,"write" });
+					getSym();
 					return;
 				}
 				else
@@ -334,6 +335,10 @@ void callprocedure()
 		}
 		gen_icode(q_call, {}, {}, procedure);
 		getSym();
+	}
+	else
+	{
+		gen_icode(q_call, {}, {}, procedure);
 	}
 }
 void assignment()

@@ -12,181 +12,164 @@ call main
 inkey
 exit
 
-p1 proc
+sort proc
 	push ebp
 	mov ebp,esp
-	push [ebp+12]
+	push 0
+	push 0
+	push 0
 	push eax
 	push ebx
 	push ecx
 	push edx
 	push edi
 	push esi
-	push 0
-	push eax
-	push ebp
-	mov ebp,[ebp+8]
-	lea eax,[ebp-20]
-	pop ebp
-	mov [ebp-32],eax
-	pop eax
-	push ebx
-	mov ebx,[ebp-4]
-	mov ebx,[ebx]
-	push eax
-	mov eax,[ebp-32]
-	mov dword ptr [eax],ebx
-	pop eax
-	pop ebx
-	push 0
-	push eax
-	push ebp
-	mov ebp,[ebp+8]
-	lea eax,[ebp-20]
-	pop ebp
-	mov [ebp-36],eax
-	pop eax
-	push 0
-	push eax
-	mov eax,[ebp-4]
-	mov eax,[eax]
-	push ebx
-	mov ebx,[ebp-36]
-	mov ebx,[ebx]
-	push ecx
-	mov ecx,eax
-	imul ecx,ebx
-	mov [ebp-40],ecx
-	pop ecx
-	pop ebx
-	pop eax
-	push ebx
-	mov ebx,[ebp-40]
-	push eax
-	mov eax,[ebp-4]
-	mov dword ptr [eax],ebx
-	pop eax
-	pop ebx
-	pop esi
-	pop edi
-	pop edx
-	pop ecx
-	pop ebx
-	pop eax
-	mov esp,ebp
-	pop ebp
-	ret
-p1 endp
-
-p2 proc
-	push ebp
-	mov ebp,esp
-	push [ebp+12]
-	push eax
-	push ebx
-	push ecx
-	push edx
-	push edi
-	push esi
-	push eax
-	mov eax,[ebp-4]
-	cmp eax,3
-	pop eax
-	jg label_0
-	push 0
-	push eax
-	push ebp
-	mov ebp,[ebp+8]
-	lea eax,[ebp-24]
-	pop ebp
-	mov [ebp-32],eax
-	pop eax
-	push 0
-	push eax
-	push ebp
-	mov ebp,[ebp+8]
-	lea eax,[ebp-20]
-	pop ebp
-	mov [ebp-36],eax
-	pop eax
-	push 0
-	push eax
-	mov eax,[ebp-36]
-	mov eax,[eax]
-	push ebx
-	mov ebx,[ebp-4]
-	mov dword ptr [ebp-40],eax
-	add dword ptr [ebp-40],ebx
-	pop ebx
-	pop eax
-	push ebx
-	mov ebx,[ebp-40]
-	push eax
-	mov eax,[ebp-32]
-	mov dword ptr [eax],ebx
-	pop eax
-	pop ebx
-	push 0
-	push eax
-	mov eax,[ebp-4]
-	mov dword ptr [ebp-44],eax
-	add dword ptr [ebp-44],1
-	pop eax
-	push ebx
-	mov ebx,[ebp-44]
-	mov dword ptr [ebp-4],ebx
-	pop ebx
-	push [ebp-4]
-	push [ebp+8]
-	call p2
-	add esp,+8
+	mov dword ptr [ebp-12],0
+	jmp label_1
 label_0:
-	pop esi
-	pop edi
-	pop edx
-	pop ecx
-	pop ebx
-	pop eax
-	mov esp,ebp
-	pop ebp
-	ret
-p2 endp
-
-f1 proc
-	push ebp
-	mov ebp,esp
-	push 0
-	push [ebp+12]
 	push 0
 	push eax
-	push ebx
-	push ecx
-	push edx
-	push edi
-	push esi
-	push 0
-	push eax
-	mov eax,[ebp-8]
+	mov eax,[ebp-12]
 	mov dword ptr [ebp-40],eax
 	add dword ptr [ebp-40],1
 	pop eax
 	push ebx
 	mov ebx,[ebp-40]
-	mov dword ptr [ebp-12],ebx
+	mov dword ptr [ebp-8],ebx
+	pop ebx
+	jmp label_5
+label_4:
+	push 0
+	push eax
+	mov eax,[ebp-12]
+	shl eax, 2
+	neg eax
+	push ebp
+	mov ebp,[ebp+8]
+	lea eax,[ebp-4+eax]
+	pop ebp
+	mov [ebp-44],eax
+	pop eax
+	push 0
+	push eax
+	mov eax,[ebp-8]
+	shl eax, 2
+	neg eax
+	push ebp
+	mov ebp,[ebp+8]
+	lea eax,[ebp-4+eax]
+	pop ebp
+	mov [ebp-48],eax
+	pop eax
+	push eax
+	mov eax,[ebp-44]
+	mov eax,[eax]
+	push ebx
+	mov ebx,[ebp-48]
+	mov ebx,[ebx]
+	cmp eax,ebx
+	pop ebx
+	pop eax
+	jle label_8
+	push 0
+	push eax
+	mov eax,[ebp-12]
+	shl eax, 2
+	neg eax
+	push ebp
+	mov ebp,[ebp+8]
+	lea eax,[ebp-4+eax]
+	pop ebp
+	mov [ebp-52],eax
+	pop eax
+	push ebx
+	mov ebx,[ebp-52]
+	mov ebx,[ebx]
+	mov dword ptr [ebp-4],ebx
 	pop ebx
 	push 0
-	push ebx
-	mov ebx,[ebp-12]
-	mov dword ptr [ebp-44],95
-	add dword ptr [ebp-44],ebx
-	pop ebx
-	push ebx
-	mov ebx,[ebp-44]
 	push eax
-	mov eax,ebx
-	mov [ebp-4],eax
+	mov eax,[ebp-12]
+	shl eax, 2
+	neg eax
+	push ebp
+	mov ebp,[ebp+8]
+	lea eax,[ebp-4+eax]
+	pop ebp
+	mov [ebp-56],eax
+	pop eax
+	push 0
+	push eax
+	mov eax,[ebp-8]
+	shl eax, 2
+	neg eax
+	push ebp
+	mov ebp,[ebp+8]
+	lea eax,[ebp-4+eax]
+	pop ebp
+	mov [ebp-60],eax
+	pop eax
+	push ebx
+	mov ebx,[ebp-60]
+	mov ebx,[ebx]
+	push eax
+	mov eax,[ebp-56]
+	mov dword ptr [eax],ebx
 	pop eax
 	pop ebx
+	push 0
+	push eax
+	mov eax,[ebp-8]
+	shl eax, 2
+	neg eax
+	push ebp
+	mov ebp,[ebp+8]
+	lea eax,[ebp-4+eax]
+	pop ebp
+	mov [ebp-64],eax
+	pop eax
+	push ebx
+	mov ebx,[ebp-4]
+	push eax
+	mov eax,[ebp-64]
+	mov dword ptr [eax],ebx
+	pop eax
+	pop ebx
+label_8:
+	inc dword ptr [ebp-8]
+	push eax
+	mov eax,[ebp-8]
+	cmp eax,4
+	pop eax
+	jle label_4
+	jmp label_6
+label_5:
+	push eax
+	mov eax,[ebp-8]
+	cmp eax,4
+	pop eax
+	jle label_4
+	jmp label_7
+label_6:
+	dec dword ptr [ebp-8]
+label_7:
+	inc dword ptr [ebp-12]
+	push eax
+	mov eax,[ebp-12]
+	cmp eax,3
+	pop eax
+	jle label_0
+	jmp label_2
+label_1:
+	push eax
+	mov eax,[ebp-12]
+	cmp eax,3
+	pop eax
+	jle label_0
+	jmp label_3
+label_2:
+	dec dword ptr [ebp-12]
+label_3:
 	pop esi
 	pop edi
 	pop edx
@@ -194,10 +177,9 @@ f1 proc
 	pop ebx
 	pop eax
 	mov esp,ebp
-	mov eax,[ebp-4]
 	pop ebp
 	ret
-f1 endp
+sort endp
 
 main proc
 	push ebp
@@ -210,136 +192,56 @@ main proc
 	push 0
 	push 0
 	push 0
-	push 0
-	push 0
 	push eax
-	mov value, input("input a integer : ")
-	invoke atol, reparg(value)
-	mov [ebp-16],eax
+	lea eax,[ebp-4]
+	mov [ebp-32],eax
 	pop eax
 	push eax
-	mov value, input("input a integer : ")
-	invoke atol, reparg(value)
-	mov [ebp-12],eax
+	mov eax,[ebp-32]
+	mov dword ptr [eax],2
 	pop eax
 	push 0
-	push ebp
-	lea ebp,[ebp-16]
-	mov [esp+4], ebp
-	pop ebp
-	push ebp
-	call p1
-	add esp,+8
-	push 1
-	push ebp
-	call p2
-	add esp,+8
+	push eax
+	lea eax,[ebp-8]
+	mov [ebp-36],eax
+	pop eax
+	push eax
+	mov eax,[ebp-36]
+	mov dword ptr [eax],3
+	pop eax
 	push 0
 	push eax
-	mov eax,[ebp-16]
-	push ebx
-	mov ebx,[ebp-12]
-	push ecx
-	mov ecx,eax
-	imul ecx,ebx
-	mov [ebp-44],ecx
-	pop ecx
-	pop ebx
+	lea eax,[ebp-12]
+	mov [ebp-40],eax
 	pop eax
-	push ebx
-	mov ebx,[ebp-44]
-	mov dword ptr [ebp-8],ebx
-	pop ebx
-	mov dword ptr [ebp-4],1
-	jmp label_2
-label_1:
+	push eax
+	mov eax,[ebp-40]
+	mov dword ptr [eax],1
+	pop eax
 	push 0
 	push eax
-	mov eax,[ebp-8]
-	push ebx
-	mov ebx,[ebp-4]
-	mov [ebp-48],eax
-	sub dword ptr [ebp-48],ebx
-	pop ebx
-	pop eax
-	push ebx
-	mov ebx,[ebp-48]
-	mov dword ptr [ebp-8],ebx
-	pop ebx
-	inc dword ptr [ebp-4]
-	push eax
-	mov eax,[ebp-4]
-	push ebx
-	mov ebx,[ebp-12]
-	cmp eax,ebx
-	pop ebx
-	pop eax
-	jle label_1
-	jmp label_3
-label_2:
-	push eax
-	mov eax,[ebp-4]
-	push ebx
-	mov ebx,[ebp-12]
-	cmp eax,ebx
-	pop ebx
-	pop eax
-	jle label_1
-	jmp label_4
-label_3:
-	dec dword ptr [ebp-4]
-label_4:
-	push eax
-	mov eax,[ebp-16]
-	printf("%d\n",eax)
+	lea eax,[ebp-16]
+	mov [ebp-44],eax
 	pop eax
 	push eax
-	mov eax,[ebp-12]
-	printf("%d\n",eax)
-	pop eax
-	push eax
-	mov eax,[ebp-16]
-	push ebx
-	mov ebx,[ebp-12]
-	cmp eax,ebx
-	pop ebx
-	pop eax
-	jle label_5
-	push [ebp-16]
-	push ebp
-	call f1
-	add esp,+8
-	mov dword ptr [ebp-16],eax
-	pop ebx
-	jmp label_6
-label_5:
-	push [ebp-12]
-	push ebp
-	call f1
-	add esp,+8
-	mov dword ptr [ebp-12],eax
-	pop ebx
-label_6:
-	printf("0123\n")
-	push eax
-	mov eax,[ebp-16]
-	printf("%d\n",eax)
-	pop eax
-	push eax
-	mov eax,[ebp-12]
-	printf("%d\n",eax)
-	pop eax
-	push eax
-	mov eax,[ebp-4]
-	printf("%d\n",eax)
-	pop eax
-	push eax
-	mov eax,[ebp-8]
-	printf("%d\n",eax)
+	mov eax,[ebp-44]
+	mov dword ptr [eax],4
 	pop eax
 	push 0
 	push eax
 	lea eax,[ebp-20]
+	mov [ebp-48],eax
+	pop eax
+	push eax
+	mov eax,[ebp-48]
+	mov dword ptr [eax],5
+	pop eax
+	push ebp
+	call sort
+	add esp,+4
+	push 0
+	push eax
+	lea eax,[ebp-4]
 	mov [ebp-52],eax
 	pop eax
 	push eax
@@ -349,7 +251,7 @@ label_6:
 	pop eax
 	push 0
 	push eax
-	lea eax,[ebp-24]
+	lea eax,[ebp-8]
 	mov [ebp-56],eax
 	pop eax
 	push eax
@@ -359,11 +261,31 @@ label_6:
 	pop eax
 	push 0
 	push eax
-	lea eax,[ebp-28]
+	lea eax,[ebp-12]
 	mov [ebp-60],eax
 	pop eax
 	push eax
 	mov eax,[ebp-60]
+	mov eax,[eax]
+	printf("%d\n",eax)
+	pop eax
+	push 0
+	push eax
+	lea eax,[ebp-16]
+	mov [ebp-64],eax
+	pop eax
+	push eax
+	mov eax,[ebp-64]
+	mov eax,[eax]
+	printf("%d\n",eax)
+	pop eax
+	push 0
+	push eax
+	lea eax,[ebp-20]
+	mov [ebp-68],eax
+	pop eax
+	push eax
+	mov eax,[ebp-68]
 	mov eax,[eax]
 	printf("%d\n",eax)
 	pop eax
