@@ -2,7 +2,7 @@
 int temp_var_t;//中间代码临时变量标号
 int temp_label;//中间代码label标号
 vector<quaternion> quaternionList;
-string opType[40] = { "+","-","*","/","j","jne","jge","jg","je","jle","jl","push","call","mov","procedure","function","label","array" ,"accumulate","begin","end","alloc","local" };
+string opType[40] = { "+","-","*","/","j","jne","jge","jg","jle","jl","je","push","call","mov","procedure","function","label","array" ,"accumulate","begin","end","alloc","local" };
 operand alloc_temp(int type)
 {
 	stringstream ss;

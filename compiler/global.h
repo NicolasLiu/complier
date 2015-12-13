@@ -22,11 +22,11 @@ enum symbolType//Symbol类型
 	_downto, _to, _begin, _end, _read, _write,//保留字到此为止
 	_identifier, _constant, _plus, _sub, _multi, _div, _lparenthese, _rparenthese,
 	_lbracket, _rbracket, _semicolon, _comma, _fullpoint, _colon, _assign, _equal, _less, _lessequal,
-	_lessmore, _more, _moreequal, _string, _character, _max_num
+	_more, _moreequal, _lessmore, _string, _character, _max_num
 };
 enum quaternion_op//四元式操作符类型
 {
-	q_add = 1, q_sub, q_mul, q_div, q_j, q_jne, q_jge, q_jg, q_je, q_jle, q_jl, q_push, q_call, q_mov, q_procedure, q_function, q_label, q_array, q_accumulate, q_begin, q_end, q_alloc, q_local
+	q_add = 1, q_sub, q_mul, q_div, q_j, q_jne, q_jge, q_jg, q_jle, q_jl, q_je, q_push, q_call, q_mov, q_procedure, q_function, q_label, q_array, q_accumulate, q_begin, q_end, q_alloc, q_local
 };
 
 typedef struct _reserved//保留字结构体

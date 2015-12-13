@@ -91,6 +91,7 @@ operand term()
 	operand temp = f1;
 	while (symbol.type == _multi || symbol.type == _div)
 	{
+		int op = symbol.type - 22;
 		getSym();
 		if (mark)
 		{
@@ -104,7 +105,7 @@ operand term()
 			{
 				temp2 = alloc_temp(_char);
 			}
-			gen_icode(q_mul, f2, temp, temp2);
+			gen_icode(op, f2, temp, temp2);
 			temp = temp2;
 		} 
 		else
@@ -119,7 +120,7 @@ operand term()
 				temp = alloc_temp(_char);
 			}
 			
-			gen_icode(q_mul, f1, f2, temp);
+			gen_icode(op, f1, f2, temp);
 		}
 		mark = 1;
 		

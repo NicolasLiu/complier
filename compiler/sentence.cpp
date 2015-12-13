@@ -187,17 +187,18 @@ void dowhile()
 {
 	operand label = alloc_label();
 	gen_icode(q_label, {}, {}, label);
-	sentence();
 	getSym();
+	sentence();
 	if (symbol.type == _while)
 	{
 		getSym();
 		operand arg1 = expression();
 		if (symbol.type == _equal || symbol.type == _less || symbol.type == _lessequal || symbol.type == _lessmore || symbol.type == _more || symbol.type == _moreequal)
 		{
+			int jop = 47 - symbol.type;
 			getSym();
 			operand arg2 = expression();
-			gen_icode(symbol.type - 30, arg1, arg2, label);
+			gen_icode(jop, arg1, arg2, label);
 			return;
 		}
 		else
