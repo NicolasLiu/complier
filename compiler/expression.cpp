@@ -15,7 +15,7 @@ operand factor()
 			operand rtn;
 			if (sym.constvar == _const)
 			{
-				rtn = { _constant,sym.value };
+				rtn = { _constant,sym.value,0,"",0,0,sym.type };
 			} 
 			else
 			{
@@ -69,12 +69,13 @@ operand factor()
 	}
 	else if (symbol.type == _lparenthese)
 	{
-		operand rtn = expression();
 		getSym();
+		operand rtn = expression();
 		if (symbol.type != _rparenthese)
 		{
 			error(12);//缺少)
 		}
+		getSym();
 		return rtn;
 	}
 	else
@@ -197,7 +198,7 @@ void callfunction()
 					error(43);//var类型参数应对应变量
 				}
 			}
-
+			param.isvar = psym.params[paramNum - 1][0];
 			gen_icode(q_push, {}, {}, param);
 		} while (symbol.type == _comma);
 		if (symbol.type != _rparenthese)

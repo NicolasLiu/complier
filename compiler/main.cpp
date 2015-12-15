@@ -1,5 +1,4 @@
 #include "global.h"
-#define sourceName "input3.txt"
 #define asmName "out.asm"
 
 char sBuffer[1000];//源代码行缓冲区
@@ -14,7 +13,10 @@ ofstream fout;//汇编文件指针
 
 void io_init()
 {
-	fin.open(sourceName);
+	char filename[100];
+	cout << "输入测试程序名:" << endl;
+	cin >> filename;
+	fin.open(filename);
 	fout.open(asmName);
 }
 void io_close()

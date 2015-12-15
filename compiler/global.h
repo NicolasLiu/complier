@@ -62,6 +62,7 @@ typedef struct _operand//操作数或结果
 	string name;//_integer,_char,_string,_function,_procedure时使用
 	int dimension;//维数
 	int upperbound;//上界
+	int constanttype;//const char,const integer
 } operand;
 typedef struct _quaternion//四元式结构
 {
