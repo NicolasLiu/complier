@@ -151,10 +151,10 @@ void forloop()
 					else
 					{
 						gen_icode(q_accumulate, i, { _constant,-1 }, {});
-						gen_icode(q_jle, i, i_end, label3);
+						gen_icode(q_jge, i, i_end, label1);
 						gen_icode(q_j, {}, {}, label3);
 						gen_icode(q_label, {}, {}, label2);
-						gen_icode(q_jle, i, i_end, label1);
+						gen_icode(q_jge, i, i_end, label1);
 						gen_icode(q_j, {}, {}, label4);
 						gen_icode(q_label, {}, {}, label3);
 						gen_icode(q_accumulate, i, { _constant,1 }, {});
@@ -317,7 +317,7 @@ void callprocedure()
 			}
 			else
 			{
-				int temp_type = p.type == _constant ? _integer : p.type;
+				int temp_type = p.type == _constant ? (p.constanttype == 0 ? _integer : p.constanttype) : p.type;
 				if (temp_type != psym.params[paramNum - 1][1])
 				{
 					error(44);//参数类型不一致
