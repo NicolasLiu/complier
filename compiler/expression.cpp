@@ -208,4 +208,8 @@ void callfunction()
 		gen_icode(q_call, {}, {}, { _function,psym.value,0,funcname });
 		getSym();
 	}
+	else
+	{
+		gen_icode(q_call, {}, {}, { _function,psym.value,0,funcname });
+	}
 }

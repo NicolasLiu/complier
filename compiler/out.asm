@@ -8,9 +8,7 @@ include masm32\include\masm32rt.inc
 	string_temp1 db 'input y: ',0
 	string_temp2 db 'x mod y = ',0
 	string_temp3 db 'test recursion',0
-	string_temp4 db 'input test condition',0
-	string_temp5 db 'test condition',0
-	string_temp6 db 'test recursion',0
+	string_temp4 db 'test array',0
 
 .code
 
@@ -261,11 +259,17 @@ fact proc
 	mov dword ptr [ebp-36],eax
 	add dword ptr [ebp-36],1
 	pop eax
+	push [ebp+8]
+	call fact
+	add esp,+4
 	push 0
 	push eax
 	mov eax,[ebp-36]
 	push ebx
-	mov ebx,[ebp+0]
+	push ebp
+	mov ebp,[ebp+8]
+	mov ebx,[ebp-44]
+	pop ebp
 	push ecx
 	mov ecx,eax
 	imul ecx,ebx
@@ -287,6 +291,11 @@ label_8:
 	mov [ebp-4],eax
 	pop eax
 label_9:
+	mov eax,[ebp-4]
+	push ebp
+	mov ebp,[ebp+8]
+	mov [ebp-44],eax
+	pop ebp
 	pop esi
 	pop edi
 	pop edx
@@ -294,7 +303,6 @@ label_9:
 	pop ebx
 	pop eax
 	mov esp,ebp
-	mov eax,[ebp-4]
 	pop ebp
 	ret
 fact endp
@@ -363,6 +371,11 @@ mod2 proc
 	mov [ebp-4],eax
 	pop eax
 	pop ebx
+	mov eax,[ebp-4]
+	push ebp
+	mov ebp,[ebp+8]
+	mov [ebp-48],eax
+	pop ebp
 	pop esi
 	pop edi
 	pop edx
@@ -370,7 +383,6 @@ mod2 proc
 	pop ebx
 	pop eax
 	mov esp,ebp
-	mov eax,[ebp-4]
 	pop ebp
 	ret
 mod2 endp
@@ -378,6 +390,8 @@ mod2 endp
 main proc
 	push ebp
 	mov ebp,esp  
+	push 0
+	push 0
 	push 0
 	push 0
 	push 0
@@ -416,7 +430,9 @@ label_10:
 	push ebp
 	call mod2
 	add esp,+12
-	mov dword ptr [ebp-24],eax
+	push ebx
+	mov ebx,[ebp-48]
+	mov dword ptr [ebp-24],ebx
 	pop ebx
 	invoke crt_printf, offset string_temp2
 	push eax
@@ -442,21 +458,17 @@ label_12:
 label_13:
 	invoke crt_printf, offset string_temp3
 	mov dword ptr [ebp-36],6
+	push ebp
+	call fact
+	add esp,+4
 	push eax
-	mov eax,[ebp+0]
-	invoke crt_printf, offset charFmt,eax
+	mov eax,[ebp-44]
+	invoke crt_printf, offset intFmt,eax
 	pop eax
-	invoke crt_printf, offset string_temp4
-	push eax
-	invoke crt_scanf, offset intFmt,  offset value
-	mov eax,value
-	mov [ebp-36],eax
-	pop eax
-	invoke crt_printf, offset string_temp5
 	push ebp
 	call testarray
 	add esp,+4
-	invoke crt_printf, offset string_temp6
+	invoke crt_printf, offset string_temp4
 	push eax
 	mov eax,[ebp-4]
 	invoke crt_printf, offset intFmt,eax

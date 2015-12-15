@@ -8,6 +8,7 @@ typedef struct _memManageItem
 	int offset;
 	int isRef;
 	int isFunc;
+	int paramoffset;
 } memManageItem;
 typedef struct _asmstackframe
 {
@@ -110,9 +111,7 @@ void update_memManage(memManageItem newItem)
 		{
 			if (iter2->name.compare(name) == 0)
 			{
-				iter2->reg = newItem.reg;
-				iter2->isRef = newItem.isRef;
-				iter2->offset = newItem.offset;
+				iter2->paramoffset = newItem.paramoffset;
 				return;
 			}
 		}
@@ -135,6 +134,15 @@ void free_memManage(string name)
 /************gen_asm×Ó³ÌÐò*********************/
 void gen_asm_procedure(vector<quaternion>::iterator &iter)
 {
+	if (iter->op == q_function)
+	{
+		stringstream ss_proc;
+		ss_proc << asmStack.top().ss << "\t" << "push" << " 0" << endl;
+		asmStack.top().ss = ss_proc.str();
+		memManageItem item = { iter->answer.name,-1,currentLevel,0,0,1 };
+		insert_memManage(item);
+	}
+	
 	string name = iter->answer.name;
 	stringstream ss_proc;
 	currentProc = name;
@@ -153,7 +161,10 @@ void gen_asm_procedure(vector<quaternion>::iterator &iter)
 	}
 	list<memManageItem> list1;
 	memManage.push_back(list1);
-	insert_memManage_father({ asmStack.top().procName, -1, currentLevel,0,0,iter->op == q_function }, 0);
+	if (iter->op == q_procedure)
+	{
+		insert_memManage_father({ asmStack.top().procName, -1, currentLevel, }, 0);
+	}
 }
 void gen_asm_begin()
 {
@@ -179,6 +190,15 @@ void gen_asm_end()
 	memManageItem item = find_memManage(currentProc);
 	if (currentLevel > 1)
 	{	
+		if (item.isFunc)
+		{
+			ss_proc << "\t" << "mov eax,[ebp-4]" << endl;
+			ss_proc << "\t" << "push ebp" << endl;
+			ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << 8 << "]" << endl;
+			ss_proc << "\t" << "mov " << "[ebp" << setiosflags(ios::showpos) << item.offset << "],eax" << endl;
+			ss_proc << "\t" << "pop ebp" << endl;
+
+		}
 		ss_proc << "\t" << "pop" << " esi" << endl;
 		ss_proc << "\t" << "pop" << " edi" << endl;
 		ss_proc << "\t" << "pop" << " edx" << endl;
@@ -186,10 +206,7 @@ void gen_asm_end()
 		ss_proc << "\t" << "pop" << " ebx" << endl;
 		ss_proc << "\t" << "pop" << " eax" << endl;
 		ss_proc << "\t" << "mov" << " esp,ebp" << endl;
-		if (item.isFunc)
-		{
-			ss_proc << "\t" << "mov eax,[ebp-4]" << endl;
-		}
+		
 		ss_proc << "\t" << "pop" << " ebp" << endl;
 		ss_proc << "\t" << "ret" << endl;
 	}
@@ -236,7 +253,7 @@ void gen_asm_alloc(vector<quaternion>::iterator &iter)
 		iter++;
 	}
 	asmStack.top().ss = ss_proc.str();
-	update_memManage({ asmStack.top().procName, -1, currentLevel,4 * (paramnum - 1) });
+	update_memManage({ asmStack.top().procName, -1, currentLevel,0,0,0,4 * (paramnum - 1) });
 }
 void gen_asm_local(vector<quaternion>::iterator &iter)
 {
@@ -543,14 +560,14 @@ void gen_asm_array(vector<quaternion>::iterator &iter)
 				if (regnum >= 0)
 				{
 
-					ss_proc << "\t" << "shl " << registername[regnum] << ",2" << endl;
-					ss_proc << "\t" << "neg " << registername[regnum] << endl;
+					ss_proc << "\t" << "shl " << registername[arg2.reg] << ",2" << endl;
+					ss_proc << "\t" << "neg " << registername[arg2.reg] << endl;
 					if (arg1.level < currentLevel)
 					{
 						ss_proc << "\t" << "push ebp" << endl;
 						ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (arg1.level - currentLevel - 1) << "]" << endl;
 					}
-					ss_proc << "\t" << "lea " << registername[regnum] << ",[ebp" << setiosflags(ios::showpos) << arg1.offset << "+" << registername[regnum] << "]" << endl;
+					ss_proc << "\t" << "lea " << registername[arg2.reg] << ",[ebp" << setiosflags(ios::showpos) << arg1.offset << "+" << registername[arg2.reg] << "]" << endl;
 					if (arg1.level < currentLevel)
 					{
 						ss_proc << "\t" << "pop ebp" << endl;
@@ -604,10 +621,6 @@ void gen_asm_mov(vector<quaternion>::iterator &iter)
 		stringstream ss;
 		ss << iter->arg2.value;
 		ss >> s_arg2;
-	}
-	else if (iter->arg2.type == _function)
-	{
-		s_arg2 = "eax";
 	}
 	else
 	{
@@ -1258,7 +1271,7 @@ void gen_asm_div(vector<quaternion>::iterator &iter)
 	if (iter->arg1.type == _constant)
 	{
 		ss_proc << "\t" << "mov eax," << iter->arg1.value << endl;
-	} 
+	}
 	else
 	{
 		arg1 = find_memManage(iter->arg1.name);
@@ -1791,7 +1804,7 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 							ss_proc << "\t" << "push eax" << endl;
 							ss_proc << "\t" << "mov eax,[ebp" << setiosflags(ios::showpos) << item.offset << "]" << endl;
 							ss_proc << "\t" << "mov eax,[eax]" << endl;
-							if (param.type == _integer)
+							if (param.type == _integer || ((param.type == _function) && (param.value == _integer)))
 							{
 								ss_proc << "\t" << "invoke crt_printf, offset intFmt,eax" << endl;
 							}
@@ -1807,7 +1820,7 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 							ss_proc << "\t" << "push " << registername[regnum] << endl;
 							ss_proc << "\t" << "mov " << registername[regnum] << ",[ebp" << setiosflags(ios::showpos) << item.offset << "]" << endl;
 							ss_proc << "\t" << "mov " << registername[regnum] << ",[" << registername[regnum] << "]" << endl;
-							if (param.type == _integer)
+							if (param.type == _integer || ((param.type == _function) && (param.value == _integer)))
 							{
 								ss_proc << "\t" << "invoke crt_printf, offset intFmt," << registername[regnum] << endl;
 							}
@@ -1825,7 +1838,7 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 					{
 						ss_proc << "\t" << "push eax" << endl;
 						ss_proc << "\t" << "mov eax,[" << registername[item.reg] << "]" << endl;
-						if (param.type == _integer)
+						if (param.type == _integer || ((param.type == _function) && (param.value == _integer)))
 						{
 							ss_proc << "\t" << "invoke crt_printf, offset intFmt,eax" << endl;
 						}
@@ -1851,7 +1864,7 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 						{
 							ss_proc << "\t" << "pop ebp" << endl;
 						}
-						if (param.type == _integer)
+						if (param.type == _integer || ((param.type == _function) && (param.value == _integer)))
 						{
 							ss_proc << "\t" << "invoke crt_printf, offset intFmt,eax" << endl;
 						}
@@ -1865,7 +1878,7 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 					else
 					{
 						ss_proc << "\t" << "push eax" << endl;
-						if (param.type == _integer)
+						if (param.type == _integer || ((param.type == _function) && (param.value == _integer)))
 						{
 							ss_proc << "\t" << "invoke crt_printf, offset intFmt," << registername[item.reg] << endl;
 						}
@@ -1997,26 +2010,51 @@ void gen_asm_call(vector<quaternion>::iterator &iter)
 	stringstream ss_proc;
 	ss_proc << asmStack.top().ss;
 	int num = 0;
-	if (currentLevel < item.level)
+	if (item.isFunc)
 	{
-		for (int i = 1; i < currentLevel; i++)
+		if (currentLevel <= item.level)
 		{
-			ss_proc << "\t" << "push [ebp+" << 4 * (currentLevel - i + 1) << "]" << endl;
+			for (int i = 1; i < currentLevel; i++)
+			{
+				ss_proc << "\t" << "push [ebp+" << 4 * (currentLevel - i + 1) << "]" << endl;
+				num++;
+			}
+			ss_proc << "\t" << "push ebp" << endl;
 			num++;
 		}
-		ss_proc << "\t" << "push ebp" << endl;
-		num++;
-	}
+		else
+		{
+			for (int i = 1; i <= item.level; i++)
+			{
+				ss_proc << "\t" << "push [ebp+" << 4 * (currentLevel - i + 1) << "]" << endl;
+				num++;
+			}
+		}
+	} 
 	else
 	{
-		for (int i = 1; i < item.level; i++)
+		if (currentLevel < item.level)
 		{
-			ss_proc << "\t" << "push [ebp+" << 4 * (currentLevel - i + 1) << "]" << endl;
+			for (int i = 1; i < currentLevel; i++)
+			{
+				ss_proc << "\t" << "push [ebp+" << 4 * (currentLevel - i + 1) << "]" << endl;
+				num++;
+			}
+			ss_proc << "\t" << "push ebp" << endl;
 			num++;
 		}
+		else
+		{
+			for (int i = 1; i < item.level; i++)
+			{
+				ss_proc << "\t" << "push [ebp+" << 4 * (currentLevel - i + 1) << "]" << endl;
+				num++;
+			}
+		}
 	}
+	
 	ss_proc << "\t" << "call " << iter->answer.name << endl;
-	ss_proc << "\t" << "add esp," << setiosflags(ios::showpos) << 4 * num + item.offset << endl;
+	ss_proc << "\t" << "add esp," << setiosflags(ios::showpos) << 4 * num + item.paramoffset << endl;
 	asmStack.top().ss = ss_proc.str();
 
 	
