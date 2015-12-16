@@ -174,6 +174,7 @@ void callfunction()
 	string funcname = symbol.identifier;
 	int paramNum = 0;
 	symItem psym = findSymTable(symbol.identifier);
+	queue<operand> opqueue;
 	getSym();
 	if (symbol.type == _lparenthese)
 	{
@@ -193,17 +194,22 @@ void callfunction()
 				{
 					error(44);//参数类型不一致
 				}
-				else if (psym.params[paramNum - 1][0] == 1 && param.name[0] == '_')
+				else if (psym.params[paramNum - 1][0] == 1 && param.type == _constant)
 				{
 					error(43);//var类型参数应对应变量
 				}
 			}
 			param.isvar = psym.params[paramNum - 1][0];
-			gen_icode(q_push, {}, {}, param);
+			opqueue.push(param);
 		} while (symbol.type == _comma);
 		if (symbol.type != _rparenthese)
 		{
 			error(12);//缺少)
+		}
+		while (!opqueue.empty())
+		{
+			gen_icode(q_push, {}, {}, opqueue.front());
+			opqueue.pop();
 		}
 		gen_icode(q_call, {}, {}, { _function,psym.value,0,funcname });
 		getSym();

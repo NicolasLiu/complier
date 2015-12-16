@@ -10,6 +10,7 @@
 #include <vector>
 #include <list>
 #include <stack>
+#include <queue>
 #include <stdlib.h>
 
 using namespace std;

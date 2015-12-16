@@ -47,12 +47,13 @@ void read()
 void write()
 {
 	getSym();
+	operand op1 = {};
 	if (symbol.type == _lparenthese)
 	{
 		getSym();
 		if (symbol.type == _string)
 		{
-			gen_icode(q_push, {}, {}, { _string,0,0,symbol.identifier });
+			op1 = { _string,0,0,symbol.identifier };
 			getSym();
 			if (symbol.type == _comma)
 			{
@@ -62,6 +63,7 @@ void write()
 			{
 				if (symbol.type == _rparenthese)
 				{
+					gen_icode(q_push, {}, {}, op1);
 					gen_icode(q_call, {}, {}, { _procedure,0,0,"write" });
 					getSym();
 					return;
@@ -75,6 +77,10 @@ void write()
 		operand exp1 = expression();
 		if (symbol.type == _rparenthese)
 		{
+			if (op1.type != 0)
+			{
+				gen_icode(q_push, {}, {}, op1);
+			}
 			gen_icode(q_push, {}, {}, exp1);
 			gen_icode(q_call, {}, {}, { _procedure,0,0,"write" });
 			getSym();
@@ -303,6 +309,7 @@ void callprocedure()
 	int paramNum = 0;
 	operand procedure = { _procedure,0,0,symbol.identifier };
 	symItem psym = findSymTable(procedure.name);
+	queue<operand> opqueue;
 	getSym();
 	if (symbol.type == _lparenthese)
 	{
@@ -328,11 +335,17 @@ void callprocedure()
 				}
 			}
 			p.isvar = psym.params[paramNum - 1][0];
-			gen_icode(q_push, {}, {}, p);
+			opqueue.push(p);
+			
 		} while (symbol.type == _comma);
 		if (symbol.type != _rparenthese)
 		{
 			error(12);//»±…Ÿ)
+		}
+		while (!opqueue.empty())
+		{
+			gen_icode(q_push, {}, {}, opqueue.front());
+			opqueue.pop();
 		}
 		gen_icode(q_call, {}, {}, procedure);
 		getSym();
