@@ -324,7 +324,7 @@ void callprocedure()
 			}
 			else
 			{
-				int temp_type = p.type == _constant ? (p.constanttype == 0 ? _integer : p.constanttype) : p.type;
+				int temp_type = p.type == _constant ? (p.constanttype == 0 ? _integer : p.constanttype) : (p.type == _function ? p.value : p.type);
 				if (temp_type != psym.params[paramNum - 1][1])
 				{
 					error(44);//参数类型不一致
