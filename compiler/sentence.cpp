@@ -1,4 +1,5 @@
 #include "global.h"
+unordered_set<string> cannotassign;
 void read()
 {
 	getSym();
@@ -115,6 +116,7 @@ void forloop()
 	if (symbol.type == _identifier)
 	{
 		symItem sym = findSymTable(symbol.identifier);
+		string needtoadd = symbol.identifier;
 		if (sym.name.empty())
 		{
 			error(41);//未找到该标识符
@@ -140,7 +142,9 @@ void forloop()
 				if (symbol.type == _do)
 				{
 					getSym();
+					cannotassign.insert(needtoadd);
 					sentence();
+					cannotassign.erase(needtoadd);
 					if (mark == _to)
 					{
 						gen_icode(q_accumulate, i, { _constant,1 }, {});
@@ -358,6 +362,10 @@ void callprocedure()
 void assignment()
 {
 	symItem asym = findSymTable(symbol.identifier);
+	if (cannotassign.find(symbol.identifier) != cannotassign.end())
+	{
+		error(47);//赋值操作错误
+	}
 	operand dst = { asym.type,0,0,symbol.identifier };
 	getSym();
 	if (symbol.type == _assign)

@@ -12,6 +12,10 @@ int error(int code)
 	cout << "µÚ" << sLine << "ÐÐ error " << code << " : " << errorinfo[code] << endl;
 	cout << "*******************************" << endl;
 	errorNum++;
-	exit(code);
+	if (code <= 40)
+	{
+		exit(code);
+	}
+	
 	return code;
 }
