@@ -18,7 +18,8 @@ void childprogram()
 	if (symbol.type == _var)//var
 	{
 		varblock();
-		for (unordered_map<string, symItem>::iterator iter = symbolTable.back().begin(); iter != symbolTable.back().end(); ++iter)
+		unordered_map<string, symItem>::iterator iter;
+		for (iter = symbolTable.back().begin(); iter != symbolTable.back().end(); ++iter)
 		{
 			if (iter->second.constvar == _var && (iter->second.type == _integer || iter->second.type == _char))
 			{

@@ -57,7 +57,7 @@ memManageItem find_memManage_local(string name)
 }
 memManageItem find_memManage(string name)
 {
-	for (list<list<memManageItem>>::iterator iter = memManage.begin(); iter != memManage.end(); iter++)
+	for (list<list<memManageItem>>::reverse_iterator iter = memManage.rbegin(); iter != memManage.rend(); iter++)
 	{
 		for (list<memManageItem>::iterator iter2 = iter->begin(); iter2 != iter->end(); iter2++)
 		{
@@ -155,7 +155,6 @@ void gen_asm_procedure(vector<quaternion>::iterator &iter)
 	{
 		stringstream ss;
 		ss << asmStack.top().ss;
-		ss << "\t" << "push 0" << endl;
 		asmStack.top().ss = ss.str();
 		asmStack.top().currentoffset -= 4;
 	}
@@ -172,13 +171,23 @@ void gen_asm_begin()
 	{
 		stringstream ss_proc;
 		ss_proc << asmStack.top().ss;
+		ss_proc << "\t" << "mov esp,ebp" << endl;
+		ss_proc << "\t" << "add esp,@need@to@add" << endl;
 		ss_proc << "\t" << "push" << " eax" << endl;
 		ss_proc << "\t" << "push" << " ebx" << endl;
 		ss_proc << "\t" << "push" << " ecx" << endl;
 		ss_proc << "\t" << "push" << " edx" << endl;
 		ss_proc << "\t" << "push" << " edi" << endl;
 		ss_proc << "\t" << "push" << " esi" << endl;
-		asmStack.top().currentoffset -= 4 * 6;
+		//asmStack.top().currentoffset -= 4 * 6;
+		asmStack.top().ss = ss_proc.str();
+	}
+	else
+	{
+		stringstream ss_proc;
+		ss_proc << asmStack.top().ss;
+		ss_proc << "\t" << "mov esp,ebp" << endl;
+		ss_proc << "\t" << "add esp,@need@to@add" << endl;
 		asmStack.top().ss = ss_proc.str();
 	}
 	
@@ -206,7 +215,6 @@ void gen_asm_end()
 		ss_proc << "\t" << "pop" << " ebx" << endl;
 		ss_proc << "\t" << "pop" << " eax" << endl;
 		ss_proc << "\t" << "mov" << " esp,ebp" << endl;
-		
 		ss_proc << "\t" << "pop" << " ebp" << endl;
 		ss_proc << "\t" << "ret" << endl;
 	}
@@ -217,7 +225,16 @@ void gen_asm_end()
 		ss_proc << "\t" << "ret" << endl;
 	}
 	ss_proc << currentProc << " endp" << endl;
-	ss_code << ss_proc.str() << endl;
+	if (ss_proc.str().find("@need@to@add") != string::npos)
+	{
+		stringstream temp;
+		temp << asmStack.top().currentoffset;
+		ss_code << ss_proc.str().replace(ss_proc.str().find("@need@to@add"), 12, temp.str()) << endl;
+	}
+	else
+	{
+		ss_code << ss_proc.str() << endl;
+	}
 	asmStack.pop();
 	if (!asmStack.empty())
 	{
@@ -268,13 +285,13 @@ void gen_asm_local(vector<quaternion>::iterator &iter)
 			ss_proc << asmStack.top().ss;
 			for (int i = 0; i <= iter->answer.upperbound; i++)
 			{
-				ss_proc << "\t" << "push" << " 0" << endl;
+				//ss_proc << "\t" << "push" << " 0" << endl;
 			}
 			asmStack.top().currentoffset -= 4 * iter->answer.upperbound;
 		}
 		else
 		{
-			ss_proc << asmStack.top().ss << "\t" << "push" << " 0" << endl;
+			ss_proc << asmStack.top().ss;// << "\t" << "push" << " 0" << endl;
 		}
 		
 	}
@@ -294,13 +311,13 @@ void gen_asm_local(vector<quaternion>::iterator &iter)
 			{
 				for (int i = 0; i <= iter->answer.upperbound; i++)
 				{
-					ss_proc << "\t" << "push" << " 0" << endl;
+					//ss_proc << "\t" << "push" << " 0" << endl;
 				}
 				asmStack.top().currentoffset -= 4 * iter->answer.upperbound;
 			}
 			else
 			{
-				ss_proc << "\t" << "push" << " 0" << endl;
+				//ss_proc << "\t" << "push" << " 0" << endl;
 			}
 		}
 		iter++;
@@ -340,7 +357,6 @@ void gen_asm_array(vector<quaternion>::iterator &iter)
 		else
 		{
 			asmStack.top().currentoffset -= 4;
-			ss_proc << "\t" << "push 0" << endl;
 			int pos = asmStack.top().currentoffset;
 			memManageItem ans = { iter->answer.name,-1,currentLevel, pos,1 };
 			insert_memManage(ans, 0);
@@ -401,7 +417,6 @@ void gen_asm_array(vector<quaternion>::iterator &iter)
 				else
 				{
 					asmStack.top().currentoffset -= 4;
-					ss_proc << "\t" << "push 0" << endl;
 					int pos = asmStack.top().currentoffset;
 					memManageItem ans = { iter->answer.name,-1,currentLevel, pos,1 };
 					insert_memManage(ans, 0);
@@ -460,7 +475,6 @@ void gen_asm_array(vector<quaternion>::iterator &iter)
 				else
 				{
 					asmStack.top().currentoffset -= 4;
-					ss_proc << "\t" << "push 0" << endl;
 					int pos = asmStack.top().currentoffset;
 					memManageItem ans = { iter->answer.name,-1,currentLevel, pos,1 };
 					insert_memManage(ans, 0);
@@ -522,7 +536,6 @@ void gen_asm_array(vector<quaternion>::iterator &iter)
 				else
 				{
 					asmStack.top().currentoffset -= 4;
-					ss_proc << "\t" << "push 0" << endl;
 					int pos = asmStack.top().currentoffset;
 					memManageItem ans = { iter->answer.name,-1,currentLevel, pos,1 };
 					insert_memManage(ans, 0);
@@ -578,7 +591,6 @@ void gen_asm_array(vector<quaternion>::iterator &iter)
 				else
 				{
 					asmStack.top().currentoffset -= 4;
-					ss_proc << "\t" << "push 0" << endl;
 					int pos = asmStack.top().currentoffset;
 					memManageItem ans = { iter->answer.name,-1,currentLevel, pos,1 };
 					insert_memManage(ans, 0);
@@ -780,7 +792,6 @@ void gen_asm_add(vector<quaternion>::iterator &iter)
 	int regnum = alloc_register();
 	if (regnum < 0)
 	{
-		ss_proc << "\t" << "push 0" << endl;
 		answer = { iter->answer.name,-1,currentLevel };
 		insert_memManage(answer);
 	}
@@ -931,7 +942,6 @@ void gen_asm_sub(vector<quaternion>::iterator &iter)
 	int regnum = alloc_register();
 	if (regnum < 0)
 	{
-		ss_proc << "\t" << "push 0" << endl;
 		answer = { iter->answer.name,-1,currentLevel };
 		insert_memManage(answer);
 	}
@@ -1082,7 +1092,6 @@ void gen_asm_mul(vector<quaternion>::iterator &iter)
 	int regnum = alloc_register();
 	if (regnum < 0)
 	{
-		ss_proc << "\t" << "push 0" << endl;
 		answer = { iter->answer.name,-1,currentLevel };
 		insert_memManage(answer);
 	}
@@ -1261,7 +1270,6 @@ void gen_asm_div(vector<quaternion>::iterator &iter)
 	int regnum = alloc_register();
 	if (regnum < 0)
 	{
-		ss_proc << "\t" << "push 0" << endl;
 		answer = { iter->answer.name,-1,currentLevel };
 		insert_memManage(answer);
 	}
@@ -1679,13 +1687,13 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 					{
 						ss_proc << "\t" << "push eax" << endl << "\t" << "print \"input an integer : \"" << endl << "\t" << "pop eax" << endl;
 						ss_proc << "\t" << "push offset value" << endl << "\t" << "push offset intFmt" << endl;
-						ss_proc << "\t" << "call crt_scanf" << endl << "add esp,+8" << endl;
+						ss_proc << "\t" << "call crt_scanf" << endl << "\t" << "add esp,+8" << endl;
 					}
 					else if (param.type == _char)
 					{
 						ss_proc << "\t" << "push eax" << endl << "\t" << "print \"input a char : \"" << endl << "\t" << "pop eax" << endl;
 						ss_proc << "\t" << "push offset value" << endl << "\t" << "push offset charFmt" << endl;
-						ss_proc << "\t" << "call crt_scanf" << endl << "add esp,+8" << endl;
+						ss_proc << "\t" << "call crt_scanf" << endl << "\t" << "add esp,+8" << endl;
 					}
 					ss_proc << "\t" << "mov eax,value" << endl;
 
@@ -1704,13 +1712,13 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 						{
 							ss_proc << "\t" << "push eax" << endl << "\t" << "print \"input an integer : \"" << endl << "\t" << "pop eax" << endl;
 							ss_proc << "\t" << "push offset value" << endl << "\t" << "push offset intFmt" << endl;
-							ss_proc << "\t" << "call crt_scanf" << endl << "add esp,+8" << endl;
+							ss_proc << "\t" << "call crt_scanf" << endl << "\t" << "add esp,+8" << endl;
 						}
 						else if (param.type == _char)
 						{
 							ss_proc << "\t" << "push eax" << endl << "\t" << "print \"input a char : \"" << endl << "\t" << "pop eax" << endl;
 							ss_proc << "\t" << "push offset value" << endl << "\t" << "push offset charFmt" << endl;
-							ss_proc << "\t" << "call crt_scanf" << endl << "add esp,+8" << endl;
+							ss_proc << "\t" << "call crt_scanf" << endl << "\t" << "add esp,+8" << endl;
 						}
 						ss_proc << "\t" << "mov eax,value" << endl;
 						ss_proc << "\t" << "mov [ebx],eax" << endl;
@@ -1724,13 +1732,13 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 						{
 							ss_proc << "\t" << "push eax" << endl << "\t" << "print \"input an integer : \"" << endl << "\t" << "pop eax" << endl;
 							ss_proc << "\t" << "push offset value" << endl << "\t" << "push offset intFmt" << endl;
-							ss_proc << "\t" << "call crt_scanf" << endl << "add esp,+8" << endl;
+							ss_proc << "\t" << "call crt_scanf" << endl << "\t" << "add esp,+8" << endl;
 						}
 						else if (param.type == _char)
 						{
 							ss_proc << "\t" << "push eax" << endl << "\t" << "print \"input a char : \"" << endl << "\t" << "pop eax" << endl;
 							ss_proc << "\t" << "push offset value" << endl << "\t" << "push offset charFmt" << endl;
-							ss_proc << "\t" << "call crt_scanf" << endl << "add esp,+8" << endl;
+							ss_proc << "\t" << "call crt_scanf" << endl << "\t" << "add esp,+8" << endl;
 						}
 						ss_proc << "\t" << "mov eax,value" << endl;
 						ss_proc << "\t" << "mov [" << registername[item.reg] << "],eax" << endl;
@@ -1746,13 +1754,13 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 				{
 					ss_proc << "\t" << "push eax" << endl << "\t" << "print \"input an integer : \"" << endl << "\t" << "pop eax" << endl;
 					ss_proc << "\t" << "push offset value" << endl << "\t" << "push offset intFmt" << endl;
-					ss_proc << "\t" << "call crt_scanf" << endl << "add esp,+8" << endl;
+					ss_proc << "\t" << "call crt_scanf" << endl << "\t" << "add esp,+8" << endl;
 				}
 				else if (param.type == _char)
 				{
 					ss_proc << "\t" << "push eax" << endl << "\t" << "print \"input a char : \"" << endl << "\t" << "pop eax" << endl;
 					ss_proc << "\t" << "push offset value" << endl << "\t" << "push offset charFmt" << endl;
-					ss_proc << "\t" << "call crt_scanf" << endl << "add esp,+8" << endl;
+					ss_proc << "\t" << "call crt_scanf" << endl << "\t" << "add esp,+8" << endl;
 				}
 				ss_proc << "\t" << "mov eax,value" << endl;
 				if (item.level < currentLevel)
@@ -1781,7 +1789,7 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 			paramStack.pop();
 			ss_data << "\t" << "string_temp" << string_temp_num++ << " db '" << param.name << "',0" << endl;
 			ss_proc << "\t" << "push offset string_temp" << string_temp_num - 1 << endl;
-			ss_proc << "\t" << "call crt_printf" << endl << "add esp,+4" << endl;
+			ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+4" << endl;
 			paramStack.push(param2);
 		}
 		if (paramStack.size() == 1)
@@ -1792,7 +1800,7 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 			{
 				ss_data << "\t" << "string_temp" << string_temp_num++ << " db '" << param.name << "',0" << endl;
 				ss_proc << "\t" << "push offset string_temp" << string_temp_num - 1 << endl;
-				ss_proc << "\t" << "call crt_printf" << endl << "add esp,+4" << endl;
+				ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+4" << endl;
 			}
 			else if (param.type == _constant)
 			{
@@ -1801,12 +1809,12 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 				if (param.constanttype == _integer)
 				{
 					ss_proc << "\t" << "push eax" << endl << "\t" << "push offset intFmt" << endl;
-					ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+					ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 				} 
 				else
 				{
 					ss_proc << "\t" << "push eax" << endl << "\t" << "push offset charFmt" << endl;
-					ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+					ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 				}
 				
 			}
@@ -1827,12 +1835,12 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 							if (param.type == _integer || ((param.type == _function) && (param.value == _integer)))
 							{
 								ss_proc << "\t" << "push eax" << endl << "\t" << "push offset intFmt" << endl;
-								ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+								ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 							}
 							else
 							{
 								ss_proc << "\t" << "push eax" << endl << "\t" << "push offset charFmt" << endl;
-								ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+								ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 							}
 							ss_proc << "\t" << "pop eax" << endl;
 						} 
@@ -1845,12 +1853,12 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 							if (param.type == _integer || ((param.type == _function) && (param.value == _integer)))
 							{
 								ss_proc << "\t" << "push " << registername[regnum] << endl << "\t" << "push offset intFmt" << endl;
-								ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+								ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 							}
 							else
 							{
 								ss_proc << "\t" << "push " << registername[regnum] << endl << "\t" << "push offset charFmt" << endl;
-								ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+								ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 							}
 							
 							ss_proc << "\t" << "pop " << registername[regnum] << endl;
@@ -1865,12 +1873,12 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 						if (param.type == _integer || ((param.type == _function) && (param.value == _integer)))
 						{
 							ss_proc << "\t" << "push eax" << endl << "\t" << "push offset intFmt" << endl;
-							ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+							ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 						}
 						else
 						{
 							ss_proc << "\t" << "push eax" << endl << "\t" << "push offset charFmt" << endl;
-							ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+							ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 						}
 						ss_proc << "\t" << "pop eax" << endl;
 					}
@@ -1893,12 +1901,12 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 						if (param.type == _integer || ((param.type == _function) && (param.value == _integer)))
 						{
 							ss_proc << "\t" << "push eax" << endl << "\t" << "push offset intFmt" << endl;
-							ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+							ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 						}
 						else
 						{
 							ss_proc << "\t" << "push eax" << endl << "\t" << "push offset charFmt" << endl;
-							ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+							ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 						}
 						ss_proc << "\t" << "pop eax" << endl;
 
@@ -1909,12 +1917,12 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 						if (param.type == _integer || ((param.type == _function) && (param.value == _integer)))
 						{
 							ss_proc << "\t" << "push " << registername[item.reg] << endl << "\t" << "push offset intFmt" << endl;
-							ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+							ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 						}
 						else
 						{
 							ss_proc << "\t" << "push " << registername[item.reg] << endl << "\t" << "push offset charFmt" << endl;
-							ss_proc << "\t" << "call crt_printf" << endl << "add esp,+8" << endl;
+							ss_proc << "\t" << "call crt_printf" << endl << "\t" << "add esp,+8" << endl;
 						}
 						
 						ss_proc << "\t" << "pop eax" << endl;
@@ -1954,7 +1962,6 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 					{
 						if (item.reg < 0)
 						{
-							ss_proc << "\t" << "push 0" << endl;
 							ss_proc << "\t" << "push ebp" << endl;
 							if (item.level < currentLevel)
 							{
@@ -1982,7 +1989,6 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 							int regnum = alloc_register();
 							if (regnum < 0)
 							{
-								ss_proc << "\t" << "push 0" << endl;
 								ss_proc << "\t" << "push eax" << endl;
 								ss_proc << "\t" << "mov eax,[ebp" << setiosflags(ios::showpos) << item.offset << "]" << endl;
 								ss_proc << "\t" << "mov eax,[eax]" << endl;

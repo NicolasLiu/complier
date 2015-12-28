@@ -122,6 +122,7 @@ void read();
 void write();
 void forloop();
 void dowhile();
+void whiledo();
 void sentence();
 void assignment();
 void ifsentence();

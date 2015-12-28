@@ -56,24 +56,47 @@ void write()
 		{
 			op1 = { _string,0,0,symbol.identifier };
 			getSym();
-			if (symbol.type == _comma)
+			if (strlen(op1.name.c_str()) != 0)
 			{
-				getSym();
-			}
-			else
-			{
-				if (symbol.type == _rparenthese)
+				if (symbol.type == _comma)
 				{
-					gen_icode(q_push, {}, {}, op1);
-					gen_icode(q_call, {}, {}, { _procedure,0,0,"write" });
 					getSym();
-					return;
 				}
 				else
 				{
-					error(12);//缺少)
+					if (symbol.type == _rparenthese)
+					{
+						gen_icode(q_push, {}, {}, op1);
+						gen_icode(q_call, {}, {}, { _procedure,0,0,"write" });
+						getSym();
+						return;
+					}
+					else
+					{
+						error(12);//缺少)
+					}
 				}
 			}
+			else
+			{
+				if (symbol.type == _comma)
+				{
+					getSym();
+				}
+				else
+				{
+					if (symbol.type == _rparenthese)
+					{
+						getSym();
+						return;
+					}
+					else
+					{
+						error(12);//缺少)
+					}
+				}
+			}
+			
 		}
 		operand exp1 = expression();
 		if (symbol.type == _rparenthese)
@@ -222,6 +245,42 @@ void dowhile()
 	}
 
 }
+void whiledo()
+{
+	operand label = alloc_label();
+	operand label2 = alloc_label();
+
+	getSym();
+	gen_icode(q_label, {}, {}, label);
+	operand arg1 = expression();
+	if (symbol.type == _equal || symbol.type == _less || symbol.type == _lessequal || symbol.type == _lessmore || symbol.type == _more || symbol.type == _moreequal)
+	{
+		int jop = symbol.type - 30;
+		getSym();
+		operand arg2 = expression();
+		gen_icode(jop, arg1, arg2, label2);
+		if (symbol.type == _do)
+		{
+			getSym();
+			
+			sentence();
+			gen_icode(q_j, {}, {}, label);
+			gen_icode(q_label, {}, {}, label2);
+		}
+		else
+		{
+			error(20);//缺少do
+		}
+		
+		return;
+	}
+	else
+	{
+		error(31);//非法的关系运算符
+	}
+
+
+}
 void ifsentence()
 {
 	getSym();
@@ -270,6 +329,10 @@ void sentence()
 	else if (symbol.type == _do)
 	{
 		dowhile();
+	}
+	else if (symbol.type == _while)
+	{
+		whiledo();
 	}
 	else if (symbol.type == _begin)
 	{
@@ -396,6 +459,10 @@ void assignment()
 					error(47);//赋值操作错误
 				}
 				gen_icode(q_mov, temp, src, {});
+			}
+			else
+			{
+				error(15);//缺少:=
 			}
 		}
 		else
