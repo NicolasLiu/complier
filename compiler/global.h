@@ -147,7 +147,7 @@ void print_icode();
 //asm.cpp
 void gen_asm();
 //optimization.cpp
-void optimization();
+void optimization(int);
 
 
 

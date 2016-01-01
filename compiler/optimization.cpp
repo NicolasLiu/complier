@@ -343,8 +343,12 @@ void CommonSubexpressionElimination()
 	}
 	quaternionList = newList;
 }
-void optimization()
+void optimization(int open)
 {
 	ConstantFolding();
-	CommonSubexpressionElimination();
+	if (open)
+	{
+		CommonSubexpressionElimination();
+	}
+	
 }
