@@ -2106,8 +2106,8 @@ void gen_asm()
 	ss_data << ".data" << endl;
 	ss_data << "\t" << "item dd 0" << endl;
 	ss_data << "\t" << "value dd 0" << endl;
-	ss_data << "\t" << "intFmt db '%d',0" << endl;
-	ss_data << "\t" << "charFmt db '%c',0" << endl;
+	ss_data << "\t" << "intFmt db ' %d',0" << endl;
+	ss_data << "\t" << "charFmt db ' %c',0" << endl;
 	ss_code << endl << ".code" << endl;
 	ss_code << endl << "start:" << endl;
 	ss_code << endl << "call main" << endl << "inkey" << endl << "exit" << endl << endl;
