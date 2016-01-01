@@ -98,10 +98,21 @@ int findDAGNode(vector<dagNode> dagMap, int type, int op1, int op2)
 	vector<dagNode>::iterator iter = dagMap.begin();
 	while (iter != dagMap.end())
 	{
-		if (iter->type == type && iter->op1 == op1 && iter->op2 == op2)
+		if (type == q_add || type == q_mul)
 		{
-			return iter - dagMap.begin();
+			if (iter->type == type && ((iter->op1 == op1 && iter->op2 == op2) || (iter->op1 == op2 && iter->op2 == op1)))
+			{
+				return iter - dagMap.begin();
+			}
+		} 
+		else
+		{
+			if (iter->type == type && iter->op1 == op1 && iter->op2 == op2)
+			{
+				return iter - dagMap.begin();
+			}
 		}
+		
 		iter++;
 	}
 	return -1;
