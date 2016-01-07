@@ -39,9 +39,13 @@ int main()
 	io_init();
 	reserved_init();
 	program();
+	if (errorNum)
+	{
+		return 0;
+	}
 	print_icode();
 	cout << "------------" << endl;
-	optimization(1);
+	optimization(0);
 	print_icode();
 	gen_asm();
 	io_close();

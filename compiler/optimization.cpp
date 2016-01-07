@@ -7,6 +7,14 @@ typedef struct _dagnode
 	int op1;
 	int op2;
 } dagNode;
+typedef struct _block
+{
+	vector<quaternion> content;
+	int next1;
+	int next2;
+	set<string> in, out, use, def;
+
+}basicblock;
 void ConstantFolding()//消除常数运算
 {
 	unordered_map<string, int> update;
@@ -121,10 +129,10 @@ void DAG(vector<quaternion>::iterator &iter, vector<quaternion> &newList)
 {
 	vector<dagNode> dagMap;
 	unordered_map<string,int> dagTable;
-	stack<int> stack1;
+	stack<int> stack1,pushstack;
 	while (true)
 	{
-		if (iter->op == q_end || iter->op == q_j || iter->op == q_jne || iter->op == q_jl || iter->op == q_jle || iter->op == q_jg || iter->op == q_jge || iter->op == q_je || iter->op == q_label || iter->op == q_call || iter->op == q_push || iter->op == q_accumulate)
+		if (iter->op == q_end || iter->op == q_j || iter->op == q_jne || iter->op == q_jl || iter->op == q_jle || iter->op == q_jg || iter->op == q_jge || iter->op == q_je || iter->op == q_label || (iter->op == q_call && (iter->answer.name.compare("read") != 0 && iter->answer.name.compare("write") != 0)) || iter->op == q_accumulate)
 		{
 			for (vector<dagNode>::reverse_iterator iterdag = dagMap.rbegin(); iterdag != dagMap.rend(); iterdag++)
 			{
@@ -141,6 +149,10 @@ void DAG(vector<quaternion>::iterator &iter, vector<quaternion> &newList)
 				{
 					newList.push_back({ dagMap[temp].type, dagMap[dagMap[temp].op1].result,dagMap[dagMap[temp].op2].result ,dagMap[temp].result });
 				} 
+				else if (dagMap[temp].type == q_push || dagMap[temp].type == q_call)
+				{
+					newList.push_back({ dagMap[temp].type, {},{},dagMap[temp].result });
+				}
 				else
 				{
 					newList.push_back({ dagMap[temp].type, dagMap[temp].result,dagMap[dagMap[temp].op1].result });
@@ -314,6 +326,38 @@ void DAG(vector<quaternion>::iterator &iter, vector<quaternion> &newList)
 					iterarg1->second = op1;
 				}
 			}
+			else if (iter->op == q_push)
+			{
+				dagMap.push_back({ q_push,iter->answer,0,-1,-1 });
+				pushstack.push(dagMap.size() - 1);
+			}
+			else if (iter->op == q_call)
+			{
+				if (iter->answer.name.compare("read") == 0)
+				{
+					while (!pushstack.empty())
+					{
+						int pos = pushstack.top();
+						unordered_map<string, int>::iterator iterarg1 = dagTable.find(dagMap[pos].result.name);
+						pushstack.pop();
+						if (iterarg1 != dagTable.end())
+						{
+							iterarg1->second = pos;
+						}
+						
+					}
+					dagMap.push_back({ q_call,iter->answer,0,-1,-1 });
+				}
+				else
+				{
+					dagMap.push_back({ q_call,iter->answer,0,-1,-1 });
+					while (!pushstack.empty())
+					{
+						pushstack.pop();
+					}
+					
+				}
+			}
 		}
 		iter++;
 	}
@@ -343,12 +387,30 @@ void CommonSubexpressionElimination()
 	}
 	quaternionList = newList;
 }
+void LiveVarAnalysis(vector<quaternion>::iterator &iter)
+{
+
+}
+void GlobalRegisterAllocate()
+{
+	vector<quaternion>::iterator iter = quaternionList.begin();
+	while (iter != quaternionList.end())
+	{
+		if (iter->op == q_begin)
+		{
+			iter++;
+			LiveVarAnalysis(iter);
+		}
+		iter++;
+	}
+}
 void optimization(int open)
 {
 	ConstantFolding();
 	if (open)
 	{
 		CommonSubexpressionElimination();
+		GlobalRegisterAllocate();
 	}
 	
 }

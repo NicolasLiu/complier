@@ -29,6 +29,7 @@ void read()
 			else
 			{
 				error(29);//非法的标识符
+				return;
 			}
 		}
 		while (symbol.type == _comma);
@@ -41,6 +42,7 @@ void read()
 		else
 		{
 			error(11);//缺少;
+			return;
 		}
 	}
 
@@ -74,6 +76,7 @@ void write()
 					else
 					{
 						error(12);//缺少)
+						return;
 					}
 				}
 			}
@@ -93,12 +96,17 @@ void write()
 					else
 					{
 						error(12);//缺少)
+						return;
 					}
 				}
 			}
 			
 		}
 		operand exp1 = expression();
+		if (errorMark)
+		{
+			return;
+		}
 		if (symbol.type == _rparenthese)
 		{
 			if (op1.type != 0)
@@ -113,6 +121,7 @@ void write()
 		else
 		{
 			error(12);//缺少)
+			return;
 		}
 	}
 }
@@ -122,6 +131,10 @@ void compound()
 	{
 		getSym();
 		sentence();
+		if (errorMark)
+		{
+			errorMark = 0;
+		}
 	} while (symbol.type == _semicolon);
 	if (symbol.type == _end)
 	{
@@ -131,6 +144,7 @@ void compound()
 	else
 	{
 		error(21);//缺少end
+		return;
 	}
 }
 void forloop()
@@ -150,6 +164,10 @@ void forloop()
 		{
 			getSym();
 			operand i_init = expression();
+			if (errorMark)
+			{
+				return;
+			}
 			gen_icode(q_mov, i, i_init, {});
 			operand label1 = alloc_label();
 			operand label2 = alloc_label();
@@ -162,11 +180,19 @@ void forloop()
 				int mark = symbol.type;
 				getSym();
 				operand i_end = expression();
+				if (errorMark)
+				{
+					return;
+				}
 				if (symbol.type == _do)
 				{
 					getSym();
 					cannotassign.insert(needtoadd);
 					sentence();
+					if (errorMark)
+					{
+						return;
+					}
 					cannotassign.erase(needtoadd);
 					if (mark == _to)
 					{
@@ -199,21 +225,25 @@ void forloop()
 				else
 				{
 					error(20);//缺少do
+					return;
 				}
 			}
 			else
 			{
 				error(19);//缺少to或downto
+				return;
 			}
 		}
 		else
 		{
 			error(15);//缺少:=
+			return;
 		}
 	}
 	else
 	{
 		error(29);//非法的标识符
+		return;
 	}
 }
 void dowhile()
@@ -222,26 +252,40 @@ void dowhile()
 	gen_icode(q_label, {}, {}, label);
 	getSym();
 	sentence();
+	if (errorMark)
+	{
+		return;
+	}
 	if (symbol.type == _while)
 	{
 		getSym();
 		operand arg1 = expression();
+		if (errorMark)
+		{
+			return;
+		}
 		if (symbol.type == _equal || symbol.type == _less || symbol.type == _lessequal || symbol.type == _lessmore || symbol.type == _more || symbol.type == _moreequal)
 		{
 			int jop = 47 - symbol.type;
 			getSym();
 			operand arg2 = expression();
+			if (errorMark)
+			{
+				return;
+			}
 			gen_icode(jop, arg1, arg2, label);
 			return;
 		}
 		else
 		{
 			error(31);//非法的关系运算符
+			return;
 		}
 	}
 	else
 	{
 		error(18);//缺少while
+		return;
 	}
 
 }
@@ -253,23 +297,36 @@ void whiledo()
 	getSym();
 	gen_icode(q_label, {}, {}, label);
 	operand arg1 = expression();
+	if (errorMark)
+	{
+		return;
+	}
 	if (symbol.type == _equal || symbol.type == _less || symbol.type == _lessequal || symbol.type == _lessmore || symbol.type == _more || symbol.type == _moreequal)
 	{
 		int jop = symbol.type - 30;
 		getSym();
 		operand arg2 = expression();
+		if (errorMark)
+		{
+			return;
+		}
 		gen_icode(jop, arg1, arg2, label2);
 		if (symbol.type == _do)
 		{
 			getSym();
 			
 			sentence();
+			if (errorMark)
+			{
+				return;
+			}
 			gen_icode(q_j, {}, {}, label);
 			gen_icode(q_label, {}, {}, label2);
 		}
 		else
 		{
 			error(20);//缺少do
+			return;
 		}
 		
 		return;
@@ -277,6 +334,7 @@ void whiledo()
 	else
 	{
 		error(31);//非法的关系运算符
+		return;
 	}
 
 
@@ -285,17 +343,29 @@ void ifsentence()
 {
 	getSym();
 	operand arg1 = expression();
+	if (errorMark)
+	{
+		return;
+	}
 	if (symbol.type == _equal || symbol.type == _less || symbol.type == _lessequal || symbol.type == _lessmore || symbol.type == _more || symbol.type == _moreequal)
 	{
 		int optype = symbol.type;
 		getSym();
 		operand arg2 = expression();
+		if (errorMark)
+		{
+			return;
+		}
 		operand label = alloc_label();
 		gen_icode(optype - 30, arg1, arg2, label);
 		if (symbol.type == _then)
 		{
 			getSym();
 			sentence();	
+			if (errorMark)
+			{
+				return;
+			}
 			if (symbol.type == _else)
 			{
 				operand label2 = alloc_label();
@@ -303,6 +373,10 @@ void ifsentence()
 				gen_icode(q_label, {}, {}, label);
 				getSym();
 				sentence();
+				if (errorMark)
+				{
+					return;
+				}
 				gen_icode(q_label, {}, {}, label2);
 			}
 			else
@@ -313,11 +387,13 @@ void ifsentence()
 		else
 		{
 			error(17);//缺少then
+			return;
 		}
 	}
 	else
 	{
 		error(24);//非法的比较运算符
+		return;
 	}
 }
 void sentence()
@@ -384,6 +460,10 @@ void callprocedure()
 		{
 			getSym();
 			operand p = expression();
+			if (errorMark)
+			{
+				return;
+			}
 			paramNum++;
 			if (paramNum > psym.paramnum)
 			{
@@ -408,6 +488,7 @@ void callprocedure()
 		if (symbol.type != _rparenthese)
 		{
 			error(12);//缺少)
+			return;
 		}
 		while (!opqueue.empty())
 		{
@@ -435,6 +516,10 @@ void assignment()
 	{
 		getSym();
 		operand src = expression();
+		if (errorMark)
+		{
+			return;
+		}
 		if (src.type == _integer && dst.type == _char)
 		{
 			error(47);//赋值操作错误
@@ -445,6 +530,10 @@ void assignment()
 	{
 		getSym();
 		operand dst2 = expression();
+		if (errorMark)
+		{
+			return;
+		}
 		if (symbol.type == _rbracket)
 		{
 			operand temp = alloc_temp(dst.type);
@@ -463,15 +552,18 @@ void assignment()
 			else
 			{
 				error(15);//缺少:=
+				return;
 			}
 		}
 		else
 		{
 			error(16);//缺少]
+			return;
 		}
 	}
 	else
 	{
 		error(15);//缺少:=
+		return;
 	}
 }

@@ -5,6 +5,10 @@ void varblock()
 	do 
 	{
 		vardefine();
+		if (errorMark)
+		{
+			errorMark = 0;
+		}
 		getSym();
 	} while (symbol.type == _identifier);
 }
@@ -57,26 +61,31 @@ void vardefine()
 										else
 										{
 											error(32);//非法的类型
+											return;
 										}
 									}
 									else
 									{
 										error(1);//数组格式错误
+										return;
 									}
 								}
 								else
 								{
 									error(1);//数组格式错误
+									return;
 								}
 							}
 							else
 							{
 								error(1);//数组格式错误
+								return;
 							}
 						}
 						else
 						{
 							error(1);//数组格式错误
+							return;
 						}
 						for (; i > 0; i--)
 						{
@@ -87,6 +96,7 @@ void vardefine()
 						if (symbol.type != _semicolon)
 						{
 							error(11);//缺少;
+							return;
 						}
 						return;
 					}
@@ -101,6 +111,7 @@ void vardefine()
 						if (symbol.type != _semicolon)
 						{
 							error(11);//缺少;
+							return;
 						}
 						return;
 					}
@@ -109,9 +120,11 @@ void vardefine()
 				else
 				{
 					error(32);//非法的类型
+					return;
 				}
 			}
 		}
 	}
 	error(29);//非法的标识符
+	return;
 }

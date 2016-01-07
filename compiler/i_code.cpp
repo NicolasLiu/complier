@@ -67,4 +67,5 @@ void print_icode()
 		}
 		
 	}
+	cout << "\t\t四元式行数:" << quaternionList.size() << endl;
 }

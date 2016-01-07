@@ -4,6 +4,11 @@ void procedureblock()
 	while (1)
 	{
 		procedurehead();
+		if (errorMark)
+		{
+			errorMark = 0;
+			getSym();
+		}
 		childprogram();
 		if (symbol.type == _semicolon)
 		{
@@ -17,6 +22,7 @@ void procedureblock()
 		else
 		{
 			error(11);//缺少;
+			return;
 		}
 	}
 	
@@ -47,6 +53,10 @@ void procedurehead()
 			do 
 			{
 				formalparam(params, paramName, &num);
+				if (errorMark)
+				{
+					return;
+				}
 				getSym();
 			} while (symbol.type == _semicolon);
 			if (symbol.type == _rparenthese)
@@ -56,6 +66,7 @@ void procedurehead()
 			else
 			{
 				error(12);//缺少)
+				return;
 			}
 			
 		}
@@ -79,11 +90,13 @@ void procedurehead()
 		else
 		{
 			error(11);//缺少;
+			return;
 		}
 	}
 	else
 	{
 		error(24);//非法的过程标识符
+		return;
 	}
 }
 void formalparam(int params[][2], char paramName[][100], int *num)
@@ -126,14 +139,16 @@ void formalparam(int params[][2], char paramName[][100], int *num)
 			else
 			{
 				error(26);//非法的参数类型
+				return;
 			}
 		}
 		else
 		{
 			error(25);//非法的参数
+			return;
 		}
 	}
 
 	error(25);//非法的参数
-
+	return;
 }

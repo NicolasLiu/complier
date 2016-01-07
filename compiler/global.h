@@ -11,7 +11,9 @@
 #include <list>
 #include <stack>
 #include <queue>
+#include <set>
 #include <unordered_set>
+#include <algorithm>
 #include <stdlib.h>
 
 using namespace std;
@@ -87,6 +89,7 @@ extern ReservedWord reservedTable[_max_num];//初始化保留字表
 extern Symbol symbol;//当前单词
 extern int returnChar;//是否需要退回一个char
 extern int errorNum;//错误数量
+extern int errorMark;
 extern int temp_var_t;//中间代码临时变量标号
 extern int temp_label;//中间代码label标号
 extern list<unordered_map<string, symItem>> symbolTable;//符号表

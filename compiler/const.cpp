@@ -4,8 +4,11 @@ void constblock()
 	do 
 	{
 		constdefine();
-		getSym();
 	} while (symbol.type == _comma);
+	if (errorMark)
+	{
+		errorMark = 0;
+	}
 	if (symbol.type == _semicolon)
 	{
 		return;
@@ -13,6 +16,7 @@ void constblock()
 	else
 	{
 		error(11);//缺少;
+		return;
 	}
 	
 }
@@ -60,16 +64,19 @@ void constdefine()
 			else
 			{
 				error(30);//非法的无符号整数
+				return;
 			}
 		}
 		else
 		{
 			error(14);//缺少=
+			return;
 		}
 	}
 	else
 	{
 		error(29);//非法的标识符
+		return;
 	}
-
+	getSym();
 }

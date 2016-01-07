@@ -27,6 +27,10 @@ operand factor()
 			{
 				getSym();
 				operand rtn2 = expression();
+				if (errorMark)
+				{
+					return{};
+				}
 				if (symbol.type == _rbracket)
 				{
 					getSym();
@@ -41,6 +45,7 @@ operand factor()
 				else
 				{
 					error(16);//缺少]
+					return{};
 				}
 			}
 			if (sym.dimension != 0)
@@ -52,7 +57,6 @@ operand factor()
 		else if (sym.name.empty())
 		{
 			error(41);//未找到该标识符
-			return{};
 		}
 		else
 		{
@@ -71,9 +75,18 @@ operand factor()
 	{
 		getSym();
 		operand rtn = expression();
+		if (errorMark)
+		{
+			return{};
+		}
+		if (errorMark)
+		{
+			return{};
+		}
 		if (symbol.type != _rparenthese)
 		{
 			error(12);//缺少)
+			return{};
 		}
 		getSym();
 		return rtn;
@@ -83,11 +96,15 @@ operand factor()
 		error(29);//非法的标识符
 		return{};
 	}
-	
+	return{};
 }
 operand term()
 {
 	operand f1 = factor();
+	if (errorMark)
+	{
+		return{};
+	}
 	int mark = 0;
 	operand temp = f1;
 	while (symbol.type == _multi || symbol.type == _div)
@@ -97,6 +114,10 @@ operand term()
 		if (mark)
 		{
 			operand f2 = factor();
+			if (errorMark)
+			{
+				return{};
+			}
 			operand temp2;
 			if (temp.type == _integer || f2.type == _integer || (temp.type == _function&&temp.value == _integer) || (f2.type == _function&&f2.value == _integer))
 			{
@@ -112,6 +133,10 @@ operand term()
 		else
 		{
 			operand f2 = factor();
+			if (errorMark)
+			{
+				return{};
+			}
 			if (f1.type == _integer || f2.type == _integer || (f1.type == _function&&f1.value == _integer) || (f2.type == _function&&f2.value == _integer))
 			{
 				temp = alloc_temp(_integer);
@@ -182,17 +207,21 @@ void callfunction()
 		{
 			getSym();
 			operand param = expression();
+			if (errorMark)
+			{
+				return;
+			}
 			paramNum++;
 			if (paramNum > psym.paramnum)
 			{
-				error(44);//参数类型不一致
+				error(44);//参数不一致
 			}
 			else
 			{
 				int temp_type = param.type == _constant ? _integer : param.type;
 				if (temp_type != psym.params[paramNum - 1][1])
 				{
-					error(44);//参数类型不一致
+					error(44);//参数不一致
 				}
 				else if (psym.params[paramNum - 1][0] == 1 && param.type == _constant)
 				{
@@ -205,6 +234,7 @@ void callfunction()
 		if (symbol.type != _rparenthese)
 		{
 			error(12);//缺少)
+			return;
 		}
 		while (!opqueue.empty())
 		{

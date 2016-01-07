@@ -4,6 +4,11 @@ void functionblock()
 	while (1)
 	{
 		functionhead();
+		if (errorMark)
+		{
+			errorMark = 0;
+			getSym();
+		}
 		childprogram();
 		if (symbol.type == _semicolon)
 		{
@@ -17,6 +22,7 @@ void functionblock()
 		else
 		{
 			error(11);//缺少;
+			return;
 		}
 	}
 }
@@ -55,6 +61,7 @@ void functionhead()
 			else
 			{
 				error(12);//缺少)
+				return;
 			}
 
 		}
@@ -84,22 +91,26 @@ void functionhead()
 				else
 				{
 					error(11);//缺少;
+					return;
 				}
 			}
 			else
 			{
 				error(28);//非法的返回值类型
+				return;
 			}
 			
 		}
 		else
 		{
 			error(13);//缺少:
+			return;
 		}
 		
 	}
 	else
 	{
 		error(27);//非法的函数标识符
+		return;
 	}
 }
