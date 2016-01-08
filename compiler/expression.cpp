@@ -127,7 +127,7 @@ operand term()
 			{
 				temp2 = alloc_temp(_char);
 			}
-			gen_icode(op, f2, temp, temp2);
+			gen_icode(op, temp, f2, temp2);
 			temp = temp2;
 		} 
 		else

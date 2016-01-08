@@ -10,11 +10,19 @@ typedef struct _dagnode
 typedef struct _block
 {
 	vector<quaternion> content;
+	set<string> bin, bout, buse, bdef;
+	int nextnum;
 	int next1;
 	int next2;
-	set<string> in, out, use, def;
 
 }basicblock;
+typedef struct _chongtuNode
+{
+	string name;
+	set<int> other;
+	int reg;
+	int rm;
+}ctNode;
 void ConstantFolding()//消除常数运算
 {
 	unordered_map<string, int> update;
@@ -387,9 +395,284 @@ void CommonSubexpressionElimination()
 	}
 	quaternionList = newList;
 }
+int findctNode(vector<ctNode> map, string tofind)
+{
+	for (vector<ctNode>::iterator iter = map.begin(); iter != map.end(); iter++)
+	{
+		if (tofind.compare(iter->name) == 0)
+		{
+			return iter - map.begin();
+		}
+	}
+	return -1;
+}
+int rmctNode(vector<ctNode> &map)
+{
+	for (vector<ctNode>::iterator iter = map.begin(); iter != map.end(); iter++)
+	{
+		if (!iter->name.empty() && iter->other.size() < 3 && iter->rm == 0)
+		{
+			iter->rm = 1;
+			for (set<int>::iterator iter2 = iter->other.begin(); iter2 != iter->other.end(); iter2++)
+			{
+				map[*iter2].other.erase(map[*iter2].other.find(iter - map.begin()));
+			}
+			iter->other.clear();
+			return iter - map.begin();
+		}
+	}
+	return -1;
+}
+void rmctNode2(vector<ctNode> &map)
+{
+	for (vector<ctNode>::iterator iter = map.begin(); iter != map.end(); iter++)
+	{
+		if (!iter->name.empty() && iter->other.size() >= 3 && iter->rm == 0)
+		{
+			iter->rm = 1;
+			for (set<int>::iterator iter2 = iter->other.begin(); iter2 != iter->other.end(); iter2++)
+			{
+				map[*iter2].other.erase(map[*iter2].other.find(iter - map.begin()));
+			}
+			iter->other.clear();
+			return;
+		}
+	}
+}
+void allocReg(vector<ctNode> &map, int pos)
+{
+	int status[3] = { 0,0,0 };
+	int toalloc[3] = { 2,4,5 };
+	for (set<int>::iterator iter = map[pos].other.begin(); iter != map[pos].other.end(); iter++)
+	{
+		if (map[*iter].reg == 2)
+		{
+			status[0] = 1;
+		}
+		else if (map[*iter].reg == 4)
+		{
+			status[1] = 1;
+		}
+		else if(map[*iter].reg == 5)
+		{
+			status[2] = 1;
+		}
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		if (status[i] == 0)
+		{
+			map[pos].reg = toalloc[i];
+			return;
+		}
+	}
+	
+}
 void LiveVarAnalysis(vector<quaternion>::iterator &iter)
 {
+	vector<quaternion>::iterator saveiter = iter;
+	vector<basicblock> blocks;
+	unordered_map<string, int> labelindex;
+	blocks.push_back({ {} });
+	while (iter->op != q_end)
+	{
+		if (iter->op == q_j || iter->op == q_jl || iter->op == q_jle || iter->op == q_jg || iter->op == q_jge || iter->op == q_je || iter->op == q_jne)
+		{
+			blocks.back().content.push_back(*iter);
+			blocks.push_back({ {},{},{},{},{} });
+		}
+		else if (iter->op == q_label)
+		{
+			if (blocks.back().content.empty() || blocks.back().content.back().op == q_label)
+			{
+				blocks.back().content.push_back(*iter);
+			}
+			else
+			{
+				blocks.push_back({ {},{},{},{},{} });
+				blocks.back().content.push_back(*iter);
+			}
+			labelindex.insert({ iter->answer.name, blocks.size() - 1 });
+		}
+		else
+		{
+			blocks.back().content.push_back(*iter);
+		}
+		iter++;
+	}
+	if (blocks.back().content.empty())
+	{
+		blocks.pop_back();
+	}
+	for (vector<basicblock>::iterator iter2 = blocks.begin(); iter2 != blocks.end(); iter2++)
+	{
+		int lastop = iter2->content.back().op;
+		if (lastop == q_jl || lastop == q_jle || lastop == q_jg || lastop == q_jge || lastop == q_je || lastop == q_jne)
+		{
+			iter2->nextnum = 2;
+			iter2->next1 = labelindex.find(iter2->content.back().answer.name)->second;
+			iter2->next2 = iter2 - blocks.begin() + 1;
+			if (iter2->next2 > blocks.size() - 1)
+			{
+				iter2->next2 = 0;
+				iter2->nextnum = 1;
+			}
+		}
+		else if (lastop == q_j)
+		{
+			iter2->nextnum = 1;
+			iter2->next1 = labelindex.find(iter2->content.back().answer.name)->second;
+		}
+		else
+		{
+			iter2->nextnum = 1;
+			iter2->next1 = iter2 - blocks.begin() + 1;
+			if (iter2->next1 > blocks.size() - 1)
+			{
+				iter2->next1 = 0;
+				iter2->nextnum = 0;
+			}
+		}
 
+		for (vector<quaternion>::iterator iter3 = iter2->content.begin(); iter3 != iter2->content.end(); iter3++)
+		{
+			if (iter3->op == q_mov)
+			{
+				if (!iter3->arg1.name.empty() && iter3->arg1.name[0] != '_')
+				{
+					iter2->bdef.insert(iter3->arg1.name);
+				}
+				if (!iter3->arg2.name.empty() && iter3->arg2.name[0] != '_')
+				{
+					iter2->buse.insert(iter3->arg2.name);
+				}
+			}
+			else if (iter3->op == q_add || iter3->op == q_sub || iter3->op == q_mul || iter3->op == q_div || iter3->op == q_array)
+			{
+				if (!iter3->arg1.name.empty() && iter3->arg1.name[0] != '_')
+				{
+					iter2->buse.insert(iter3->arg1.name);
+				}
+				if (!iter3->arg2.name.empty() && iter3->arg2.name[0] != '_')
+				{
+					iter2->buse.insert(iter3->arg2.name);
+				}
+				if (!iter3->answer.name.empty() && iter3->answer.name[0] != '_')
+				{
+					iter2->bdef.insert(iter3->answer.name);
+				}
+			}
+			else if (iter3->op == q_jl || iter3->op == q_jle || iter3->op == q_jg || iter3->op == q_jge || iter3->op == q_je || iter3->op == q_jne)
+			{
+				if (!iter3->arg1.name.empty() && iter3->arg1.name[0] != '_')
+				{
+					iter2->buse.insert(iter3->arg1.name);
+				}
+				if (!iter3->arg2.name.empty() && iter3->arg2.name[0] != '_')
+				{
+					iter2->buse.insert(iter3->arg2.name);
+				}
+			}
+			else if (iter3->op == q_push || iter3->op == q_accumulate)
+			{
+				if (!iter3->arg1.name.empty() && iter3->arg1.name[0] != '_')
+				{
+					iter2->buse.insert(iter3->arg1.name);
+				}
+			}
+		}
+	}
+	int mark = 3;
+	do 
+	{
+		for (vector<basicblock>::reverse_iterator iter2 = blocks.rbegin(); iter2 != blocks.rend(); iter2++)
+		{
+			if (iter2->nextnum == 2)
+			{
+				iter2->bout.clear();
+				set_union(blocks[iter2->next1].bin.begin(), blocks[iter2->next1].bin.end(), blocks[iter2->next2].bin.begin(), blocks[iter2->next2].bin.end(), inserter(iter2->bout,iter2->bout.begin()));
+			}
+			else if (iter2->nextnum == 1)
+			{
+				iter2->bout.clear();
+				set<string> temp(blocks[iter2->next1].bin);
+				iter2->bout = temp;
+			}
+
+			set<string> temp, temp2;
+			set_difference(iter2->bout.begin(), iter2->bout.end(), iter2->bdef.begin(), iter2->bdef.end(), inserter(temp, temp.begin()));
+			set_union(iter2->buse.begin(), iter2->buse.end(), temp.begin(), temp.end(), inserter(temp2, temp2.begin()));
+			iter2->bin = temp2;
+		}
+	} while (mark--);
+
+	vector<ctNode> ctMap;
+	for (vector<basicblock>::iterator iter2 = blocks.begin(); iter2 != blocks.end(); iter2++)
+	{
+		int num = iter2->bin.size();
+		vector<int> nowmap;
+		for (set<string>::iterator iter3 = iter2->bin.begin(); iter3 != iter2->bin.end(); iter3++)
+		{
+			int pos = findctNode(ctMap, *iter3);
+			if (pos == -1)
+			{
+				ctMap.push_back({ *iter3,{} });
+				nowmap.push_back(ctMap.size() - 1);
+			} 
+			else
+			{
+				nowmap.push_back(pos);
+			}
+		}
+		for (int i = 0; i < num; i++)
+		{
+			for (int j = i + 1; j < num; j++)
+			{
+				ctMap[i].other.insert(j);
+				ctMap[j].other.insert(i);
+			}
+		}
+
+	}
+	vector<ctNode> ctMap2(ctMap);
+	stack<int> rmstack;
+	for (int i = 0; i < ctMap2.size(); i++)
+	{
+		int pos = rmctNode(ctMap);
+		if (pos != -1)
+		{
+			rmstack.push(pos);
+		}
+		else
+		{
+			rmctNode2(ctMap);
+		}
+	}
+	while (!rmstack.empty())
+	{
+		int pos = rmstack.top();
+		allocReg(ctMap2,pos);
+		rmstack.pop();
+	}
+	while (saveiter->op != q_end)
+	{
+		int pos = findctNode(ctMap2, saveiter->arg1.name);
+		if (pos != -1)
+		{
+			saveiter->arg1.reg = ctMap2[pos].reg;
+		} 
+		pos = findctNode(ctMap2, saveiter->arg2.name);
+		if (pos != -1)
+		{
+			saveiter->arg2.reg = ctMap2[pos].reg;
+		}
+		pos = findctNode(ctMap2, saveiter->answer.name);
+		if (pos != -1)
+		{
+			saveiter->answer.reg = ctMap2[pos].reg;
+		}
+		saveiter++;
+	}
 }
 void GlobalRegisterAllocate()
 {
@@ -410,7 +693,7 @@ void optimization(int open)
 	if (open)
 	{
 		CommonSubexpressionElimination();
-		GlobalRegisterAllocate();
+		//GlobalRegisterAllocate();
 	}
 	
 }

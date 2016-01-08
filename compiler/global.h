@@ -12,6 +12,7 @@
 #include <stack>
 #include <queue>
 #include <set>
+#include <iterator>
 #include <unordered_set>
 #include <algorithm>
 #include <stdlib.h>
@@ -67,6 +68,7 @@ typedef struct _operand//操作数或结果
 	int dimension;//维数
 	int upperbound;//上界
 	int constanttype;//const char,const integer
+	int reg;//全局寄存器分配结果
 } operand;
 typedef struct _quaternion//四元式结构
 {

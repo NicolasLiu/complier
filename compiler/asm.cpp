@@ -55,7 +55,7 @@ memManageItem find_memManage_local(string name)
 	}
 	return{};
 }
-memManageItem find_memManage(string name)
+memManageItem find_memManage(string name, int reg=-1)
 {
 	for (list<list<memManageItem>>::reverse_iterator iter = memManage.rbegin(); iter != memManage.rend(); iter++)
 	{
@@ -63,6 +63,10 @@ memManageItem find_memManage(string name)
 		{
 			if (iter2->name.compare(name) == 0)
 			{
+				if (reg == 2 || reg == 4 || reg == 5)
+				{
+					iter2->reg = reg;
+				}
 				return *iter2;
 			}
 		}
@@ -332,7 +336,7 @@ void gen_asm_label(string label)
 }
 void gen_asm_array(vector<quaternion>::iterator &iter)
 {
-	memManageItem arg1 = find_memManage(iter->arg1.name);
+	memManageItem arg1 = find_memManage(iter->arg1.name, iter->arg1.reg);
 	operand arg2 = iter->arg2;
 	stringstream ss_proc;
 	ss_proc << asmStack.top().ss;
@@ -379,7 +383,7 @@ void gen_asm_array(vector<quaternion>::iterator &iter)
 	} 
 	else
 	{
-		memManageItem arg2 = find_memManage(iter->arg2.name);
+		memManageItem arg2 = find_memManage(iter->arg2.name, iter->arg2.reg);
 		if (arg2.isRef)
 		{
 			if (arg2.reg < 0)
@@ -625,7 +629,7 @@ void gen_asm_mov(vector<quaternion>::iterator &iter)
 	stringstream ss_proc;
 	string s_arg2;
 	ss_proc << asmStack.top().ss;
-	memManageItem arg1 = find_memManage(iter->arg1.name);
+	memManageItem arg1 = find_memManage(iter->arg1.name, iter->arg1.reg);
 	int alloc_success = -1;
 	//arg2区分
 	if (iter->arg2.type == _constant)//reg2是常数
@@ -636,7 +640,7 @@ void gen_asm_mov(vector<quaternion>::iterator &iter)
 	}
 	else
 	{
-		memManageItem arg2 = find_memManage(iter->arg2.name);
+		memManageItem arg2 = find_memManage(iter->arg2.name, iter->arg2.reg);
 		if (arg2.isRef)//arg2是数组
 		{
 			if (arg2.reg < 0)//arg2存在内存中
@@ -765,7 +769,7 @@ void gen_asm_mov(vector<quaternion>::iterator &iter)
 	//arg2恢复现场
 	if (iter->arg2.type != _constant)
 	{
-		memManageItem arg2 = find_memManage(iter->arg2.name);
+		memManageItem arg2 = find_memManage(iter->arg2.name, iter->arg2.reg);
 		if (arg2.reg < 0)//arg2存在内存中
 		{
 			if (alloc_success != -1)
@@ -804,7 +808,7 @@ void gen_asm_add(vector<quaternion>::iterator &iter)
 	}
 	else
 	{
-		arg1 = find_memManage(iter->arg1.name);
+		arg1 = find_memManage(iter->arg1.name, iter->arg1.reg);
 		if (arg1.isRef)
 		{
 			if (arg1.reg < 0)
@@ -858,7 +862,7 @@ void gen_asm_add(vector<quaternion>::iterator &iter)
 	}
 	else
 	{
-		arg2 = find_memManage(iter->arg2.name);
+		arg2 = find_memManage(iter->arg2.name, iter->arg2.reg);
 		if (arg2.isRef)
 		{
 			if (arg2.reg < 0)
@@ -954,7 +958,7 @@ void gen_asm_sub(vector<quaternion>::iterator &iter)
 	}
 	else
 	{
-		arg1 = find_memManage(iter->arg1.name);
+		arg1 = find_memManage(iter->arg1.name, iter->arg1.reg);
 		if (arg1.isRef)
 		{
 			if (arg1.reg < 0)
@@ -1008,7 +1012,7 @@ void gen_asm_sub(vector<quaternion>::iterator &iter)
 	}
 	else
 	{
-		arg2 = find_memManage(iter->arg2.name);
+		arg2 = find_memManage(iter->arg2.name, iter->arg2.reg);
 		if (arg2.isRef)
 		{
 			if (arg2.reg < 0)
@@ -1104,7 +1108,7 @@ void gen_asm_mul(vector<quaternion>::iterator &iter)
 	}
 	else
 	{
-		arg1 = find_memManage(iter->arg1.name);
+		arg1 = find_memManage(iter->arg1.name, iter->arg1.reg);
 		if (arg1.isRef)
 		{
 			if (arg1.reg < 0)
@@ -1167,7 +1171,7 @@ void gen_asm_mul(vector<quaternion>::iterator &iter)
 	}
 	else
 	{
-		arg2 = find_memManage(iter->arg2.name);
+		arg2 = find_memManage(iter->arg2.name, iter->arg2.reg);
 		if (arg2.isRef)
 		{
 			if (arg2.reg < 0)
@@ -1282,7 +1286,7 @@ void gen_asm_div(vector<quaternion>::iterator &iter)
 	}
 	else
 	{
-		arg1 = find_memManage(iter->arg1.name);
+		arg1 = find_memManage(iter->arg1.name, iter->arg1.reg);
 		if (arg1.isRef)
 		{
 			if (arg1.reg < 0)
@@ -1329,7 +1333,7 @@ void gen_asm_div(vector<quaternion>::iterator &iter)
 	}
 	else
 	{
-		arg2 = find_memManage(iter->arg2.name);
+		arg2 = find_memManage(iter->arg2.name, iter->arg2.reg);
 		if (arg2.isRef)
 		{
 			if (arg2.reg < 0)
@@ -1413,7 +1417,7 @@ void gen_asm_jcommon(vector<quaternion>::iterator &iter,string jtype)
 	}
 	else
 	{
-		memManageItem arg1 = find_memManage(iter->arg1.name);
+		memManageItem arg1 = find_memManage(iter->arg1.name, iter->arg1.reg);
 		if (arg1.reg < 0)//arg1在内存
 		{
 			if (arg1.isRef)//arg1存的是地址
@@ -1495,7 +1499,7 @@ void gen_asm_jcommon(vector<quaternion>::iterator &iter,string jtype)
 	} 
 	else
 	{
-		memManageItem arg2 = find_memManage(iter->arg2.name);
+		memManageItem arg2 = find_memManage(iter->arg2.name, iter->arg2.reg);
 		if (arg2.reg < 0)
 		{
 			if (arg2.isRef)//arg2存的是地址
@@ -1606,7 +1610,7 @@ void gen_asm_accumulate(vector<quaternion>::iterator &iter)
 	ss_proc << asmStack.top().ss;
 	if (type.value == 1)
 	{
-		memManageItem mvar = find_memManage(var.name);
+		memManageItem mvar = find_memManage(var.name, var.reg);
 		if (mvar.reg < 0)
 		{
 			if (mvar.level < currentLevel)
@@ -1628,7 +1632,7 @@ void gen_asm_accumulate(vector<quaternion>::iterator &iter)
 	}
 	else
 	{
-		memManageItem mvar = find_memManage(var.name);
+		memManageItem mvar = find_memManage(var.name,var.reg);
 		if (mvar.reg < 0)
 		{
 			if (mvar.level < currentLevel)
@@ -1674,7 +1678,7 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 		{
 			operand param = paramStack2.top();
 			paramStack2.pop();
-			memManageItem item = find_memManage(param.name);
+			memManageItem item = find_memManage(param.name,param.reg);
 
 			if (item.isRef)
 			{
@@ -1821,7 +1825,7 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 			else
 			{
 				string s;
-				memManageItem item = find_memManage(param.name);
+				memManageItem item = find_memManage(param.name,param.reg);
 				if (item.isRef)
 				{
 					if (item.reg < 0)
@@ -1944,7 +1948,7 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 			}
 			else
 			{
-				memManageItem item = find_memManage(paramStack.top().name);
+				memManageItem item = find_memManage(paramStack.top().name,paramStack.top().reg);
 				if (param.isvar == 1)//传址
 				{
 					if (item.isRef)//变量本身是地址
@@ -2018,16 +2022,23 @@ void gen_asm_push(vector<quaternion>::iterator &iter)
 					{
 						if (item.reg < 0)
 						{
+
 							if (item.level < currentLevel)
 							{
+								ss_proc << "\t" << "push 0" << endl;
+								ss_proc << "\t" << "push eax" << endl;
 								ss_proc << "\t" << "push ebp" << endl;
 								ss_proc << "\t" << "mov ebp,[ebp" << setiosflags(ios::showpos) << -4 * (item.level - currentLevel - 1) << "]" << endl;
-							}
-							ss_proc << "\t" << "push [ebp" << setiosflags(ios::showpos) << item.offset << "]" << endl;
-							if (item.level < currentLevel)
-							{
+								ss_proc << "\t" << "mov eax,[ebp" << setiosflags(ios::showpos) << item.offset << "]" << endl;
 								ss_proc << "\t" << "pop ebp" << endl;
+								ss_proc << "\t" << "mov [esp+4],eax" << endl;
+								ss_proc << "\t" << "pop eax" << endl;
 							}
+							else
+							{
+								ss_proc << "\t" << "push [ebp" << setiosflags(ios::showpos) << item.offset << "]" << endl;
+							}
+							
 						}
 						else
 						{

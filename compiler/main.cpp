@@ -45,7 +45,7 @@ int main()
 	}
 	print_icode();
 	cout << "------------" << endl;
-	optimization(0);
+	optimization(1);
 	print_icode();
 	gen_asm();
 	io_close();
