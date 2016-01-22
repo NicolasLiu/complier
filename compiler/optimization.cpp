@@ -582,7 +582,7 @@ void LiveVarAnalysis(vector<quaternion>::iterator &iter)
 			}
 		}
 	}
-	int mark = 3;
+	int mark = 4;
 	do 
 	{
 		for (vector<basicblock>::reverse_iterator iter2 = blocks.rbegin(); iter2 != blocks.rend(); iter2++)
@@ -673,6 +673,7 @@ void LiveVarAnalysis(vector<quaternion>::iterator &iter)
 		}
 		saveiter++;
 	}
+
 }
 void GlobalRegisterAllocate()
 {

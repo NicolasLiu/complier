@@ -7,7 +7,6 @@ void functionblock()
 		if (errorMark)
 		{
 			errorMark = 0;
-			getSym();
 		}
 		childprogram();
 		if (symbol.type == _semicolon)

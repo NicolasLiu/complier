@@ -7,9 +7,13 @@ void procedureblock()
 		if (errorMark)
 		{
 			errorMark = 0;
-			getSym();
 		}
 		childprogram();
+		if (errorMark == 2)
+		{
+			errorMark = 0;
+			getSym();
+		}
 		if (symbol.type == _semicolon)
 		{
 			popSymTableLevel();

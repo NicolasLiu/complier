@@ -11,15 +11,28 @@ string errorinfo[100] = { "","非法的字符","非法的字符串","未知的单词","","","","
 int error(int code)
 {
 	cout << "*******************************" << endl;
-	cout << "第" << sLine << "行" << " : " << errorinfo[code] << endl;
+	cout << "第" << sLine << "行";
+	if (code > 40)
+	{
+		cout << " (语义错误)";
+	}
+	cout << " : " << errorinfo[code] << endl;
 	cout << "*******************************" << endl;
 	errorNum++;
 	if (code <= 40)
 	{
-		errorMark = 1;
-		while (symbol.type != _semicolon)
+		
+		while (symbol.type != _semicolon && symbol.type != _end)
 		{
 			getSym();
+		}
+		if (symbol.type == _semicolon)
+		{
+			errorMark = 1;
+		} 
+		else
+		{
+			errorMark = 2;
 		}
 	}
 	

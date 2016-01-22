@@ -57,6 +57,8 @@ operand factor()
 		else if (sym.name.empty())
 		{
 			error(41);//未找到该标识符
+			getSym();
+
 		}
 		else
 		{
@@ -212,25 +214,24 @@ void callfunction()
 				return;
 			}
 			paramNum++;
-			if (paramNum > psym.paramnum)
+
+			int temp_type = param.type == _constant ? _integer : param.type;
+			if (temp_type != psym.params[paramNum - 1][1])
 			{
 				error(44);//参数不一致
 			}
-			else
+			else if (psym.params[paramNum - 1][0] == 1 && param.type == _constant)
 			{
-				int temp_type = param.type == _constant ? _integer : param.type;
-				if (temp_type != psym.params[paramNum - 1][1])
-				{
-					error(44);//参数不一致
-				}
-				else if (psym.params[paramNum - 1][0] == 1 && param.type == _constant)
-				{
-					error(43);//var类型参数应对应变量
-				}
+				error(43);//var类型参数应对应变量
 			}
+			
 			param.isvar = psym.params[paramNum - 1][0];
 			opqueue.push(param);
 		} while (symbol.type == _comma);
+		if (paramNum != psym.paramnum)
+		{
+			error(44);//参数不一致
+		}
 		if (symbol.type != _rparenthese)
 		{
 			error(12);//缺少)

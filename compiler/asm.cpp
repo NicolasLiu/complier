@@ -65,7 +65,7 @@ memManageItem find_memManage(string name, int reg=-1)
 			{
 				if (reg == 2 || reg == 4 || reg == 5)
 				{
-					iter2->reg = reg;
+					//iter2->reg = reg;
 				}
 				return *iter2;
 			}

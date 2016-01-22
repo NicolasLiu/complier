@@ -131,9 +131,14 @@ void compound()
 	{
 		getSym();
 		sentence();
-		if (errorMark)
+		if (errorMark == 1)
 		{
 			errorMark = 0;
+		}
+		else if (errorMark == 2)
+		{
+			errorMark = 0;
+			break;
 		}
 	} while (symbol.type == _semicolon);
 	if (symbol.type == _end)
@@ -432,6 +437,7 @@ void sentence()
 		if (sym.name.empty())
 		{
 			error(41);//未找到该标识符
+			assignment();
 		}
 		else
 		{
@@ -465,26 +471,26 @@ void callprocedure()
 				return;
 			}
 			paramNum++;
-			if (paramNum > psym.paramnum)
+
+
+			int temp_type = p.type == _constant ? (p.constanttype == 0 ? _integer : p.constanttype) : (p.type == _function ? p.value : p.type);
+			if (temp_type != psym.params[paramNum - 1][1])
 			{
 				error(44);//参数类型不一致
 			}
-			else
+			else if (psym.params[paramNum - 1][0] == 1 && p.type == _constant)
 			{
-				int temp_type = p.type == _constant ? (p.constanttype == 0 ? _integer : p.constanttype) : (p.type == _function ? p.value : p.type);
-				if (temp_type != psym.params[paramNum - 1][1])
-				{
-					error(44);//参数类型不一致
-				}
-				else if (psym.params[paramNum - 1][0] == 1 && p.type == _constant)
-				{
-					error(43);//var类型参数应对应变量
-				}
+				error(43);//var类型参数应对应变量
 			}
+			
 			p.isvar = psym.params[paramNum - 1][0];
 			opqueue.push(p);
 			
 		} while (symbol.type == _comma);
+		if (paramNum != psym.paramnum)
+		{
+			error(44);//参数类型不一致
+		}
 		if (symbol.type != _rparenthese)
 		{
 			error(12);//缺少)
